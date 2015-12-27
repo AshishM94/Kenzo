@@ -32,6 +32,7 @@
 #include "mdss_debug.h"
 #include "mdss_dba_utils.h"
 #include "mdss_dsi_phy.h"
+#include "mdss_livedisplay.h"
 
 #define XO_CLK_RATE	19200000
 
@@ -1444,6 +1445,9 @@ static int mdss_dsi_unblank(struct mdss_panel_data *pdata)
 		if (mdss_dsi_is_te_based_esd(ctrl_pdata))
 			enable_irq(gpio_to_irq(ctrl_pdata->disp_te_gpio));
 	}
+
+	mdss_livedisplay_update(pdata->panel_info.livedisplay,
+			MODE_UPDATE_ALL);
 
 	ctrl_pdata->ctrl_state |= CTRL_STATE_PANEL_INIT;
 error:
