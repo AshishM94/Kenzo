@@ -820,7 +820,6 @@ limSendDelStaCnf(tpAniSirGlobal pMac, tSirMacAddr staDsAddr,
 
         psessionEntry->limAID = 0;
 
-
     }
 
     if ((mlmStaContext.cleanupTrigger ==

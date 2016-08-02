@@ -1047,6 +1047,33 @@ void csrReleaseCommandRemoveKey(tpAniSirGlobal pMac, tSmeCmd *pCommand)
     csrReinitRemoveKeyCmd(pMac, pCommand);
     csrReleaseCommand( pMac, pCommand );
 }
+
+/**
+ * csr_is_disconnect_full_power_cmd() - Check if command is for
+ * disconnect or for fullpower
+ * @command: command to check
+ *
+ * Return: true if disconnect or full power command else false
+ */
+bool csr_is_disconnect_full_power_cmd(tSmeCmd *command)
+{
+    switch (command->command) {
+    case eSmeCommandRoam:
+        if (CSR_IS_DISCONNECT_COMMAND(command))
+            return true;
+        break;
+    case eSmeCommandWmStatusChange:
+    case eSmeCommandExitImps:
+    case eSmeCommandExitBmps:
+    case eSmeCommandExitUapsd:
+    case eSmeCommandExitWowl:
+        return true;
+    default:
+        return false;
+    }
+    return false;
+}
+
 void csrAbortCommand( tpAniSirGlobal pMac, tSmeCmd *pCommand, tANI_BOOLEAN fStopping )
 {
 
@@ -5600,7 +5627,7 @@ static tANI_BOOLEAN csrRoamProcessResults( tpAniSirGlobal pMac, tSmeCmd *pComman
                                                pSirBssDesc, &BroadcastMac,
                                                FALSE, FALSE, eSIR_TX_RX, 0, 0, NULL, 0 ); // NO keys... these key parameters don't matter.
                 }
-                else
+                else if (!pSession->abortConnection)
                 {
                     //Need to wait for supplicant authtication
                     roamInfo.fAuthRequired = eANI_BOOLEAN_TRUE;
@@ -7423,8 +7450,8 @@ eHalStatus csrRoamDisconnectInternal(tpAniSirGlobal pMac, tANI_U32 sessionId, eC
     {
         csrScanAbortScanForSSID(pMac, sessionId);
         status = eHAL_STATUS_CMD_NOT_QUEUED;
-        smsLog( pMac, LOG1, FL(" Disconnect cmd not queued, Roam command is not present"
-                               " return with status %d"), status);
+        smsLog(pMac, LOGE,
+             FL("Disconnect not queued, Abort Scan for SSID"));
     }
     return (status);
 }
@@ -9628,6 +9655,7 @@ void csrRoamCheckForLinkStatusChange( tpAniSirGlobal pMac, tSirSmeRsp *pSirMsg )
     tSirSmeAssocInd *pAssocInd;
     tSirSmeDisassocInd *pDisassocInd;
     tSirSmeDeauthInd *pDeauthInd;
+    tSirSmeDisConDoneInd *pDisConDoneInd;
     tSirSmeWmStatusChangeNtf *pStatusChangeMsg;
     tSirSmeNewBssInfo *pNewBss;
     tSmeIbssPeerInd *pIbssPeerInd;
@@ -9794,19 +9822,6 @@ void csrRoamCheckForLinkStatusChange( tpAniSirGlobal pMac, tSirSmeRsp *pSirMsg )
                     csrRoamIssueWmStatusChange( pMac, sessionId, eCsrDisassociated, pSirMsg );
                     if (CSR_IS_INFRA_AP(&pSession->connectedProfile))
                     {
-                        pRoamInfo = &roamInfo;
-                        pRoamInfo->statusCode = pDisassocInd->statusCode;
-                        pRoamInfo->u.pConnectedProfile = &pSession->connectedProfile;
-                        pRoamInfo->staId = (tANI_U8)pDisassocInd->staId;
-
-                        vos_mem_copy(pRoamInfo->peerMac, pDisassocInd->peerMacAddr,
-                                     sizeof(tSirMacAddr));
-                        vos_mem_copy(&pRoamInfo->bssid, pDisassocInd->bssId,
-                                     sizeof(tCsrBssid));
-
-                        status = csrRoamCallCallback(pMac, sessionId, pRoamInfo, 0,
-                                        eCSR_ROAM_INFRA_IND, eCSR_ROAM_RESULT_DISASSOC_IND);
-
                         /*
                          *  STA/P2P client got  disassociated so remove any pending deauth
                          *  commands in sme pending list
@@ -9881,26 +9896,33 @@ void csrRoamCheckForLinkStatusChange( tpAniSirGlobal pMac, tSirSmeRsp *pSirMsg )
 #endif
                 csrRoamLinkDown(pMac, sessionId);
                 csrRoamIssueWmStatusChange( pMac, sessionId, eCsrDeauthenticated, pSirMsg );
-                if(CSR_IS_INFRA_AP(&pSession->connectedProfile))
-                {
-
-                    pRoamInfo = &roamInfo;
-
-                    pRoamInfo->statusCode = pDeauthInd->statusCode;
-                    pRoamInfo->u.pConnectedProfile = &pSession->connectedProfile;
-
-                    pRoamInfo->staId = (tANI_U8)pDeauthInd->staId;
-
-                    vos_mem_copy(pRoamInfo->peerMac, pDeauthInd->peerMacAddr,
-                                 sizeof(tSirMacAddr));
-                    vos_mem_copy(&pRoamInfo->bssid, pDeauthInd->bssId,
-                                 sizeof(tCsrBssid));
-
-                    status = csrRoamCallCallback(pMac, sessionId, pRoamInfo, 0, eCSR_ROAM_INFRA_IND, eCSR_ROAM_RESULT_DEAUTH_IND);
-                }
             }
             break;
-        
+
+        case eWNI_SME_DISCONNECT_DONE_IND:
+            pDisConDoneInd = (tSirSmeDisConDoneInd *)(pSirMsg);
+            smsLog( pMac, LOG1,
+                    FL("eWNI_SME_DISCONNECT_DONE_IND RC:%d"),
+                        pDisConDoneInd->reasonCode);
+            if( CSR_IS_SESSION_VALID(pMac, pDisConDoneInd->sessionId))
+            {
+                roamInfo.reasonCode = pDisConDoneInd->reasonCode;
+                roamInfo.statusCode = eSIR_SME_STA_DISASSOCIATED;
+                vos_mem_copy(roamInfo.peerMac, pDisConDoneInd->peerMacAddr,
+                             sizeof(tSirMacAddr));
+                status = csrRoamCallCallback(pMac,
+                                     pDisConDoneInd->sessionId,
+                                     &roamInfo, 0,
+                                     eCSR_ROAM_LOSTLINK,
+                                     eCSR_ROAM_RESULT_DISASSOC_IND);
+            }
+            else
+            {
+                smsLog(pMac, LOGE, FL("Inactive session %d"),
+                        pDisConDoneInd->sessionId);
+            }
+            break;
+
         case eWNI_SME_SWITCH_CHL_REQ:        // in case of STA, the SWITCH_CHANNEL originates from its AP
             smsLog( pMac, LOGW, FL("eWNI_SME_SWITCH_CHL_REQ from SME"));
             pSwitchChnInd = (tpSirSmeSwitchChannelInd)pSirMsg;
@@ -11016,17 +11038,7 @@ eHalStatus csrRoamLostLink( tpAniSirGlobal pMac, tANI_U32 sessionId, tANI_U32 ty
         result = eCSR_ROAM_RESULT_DEAUTH_IND;
         pDeauthIndMsg = (tSirSmeDeauthInd *)pSirMsg;
         pSession->roamingStatusCode = pDeauthIndMsg->statusCode;
-        /* Convert into proper reason code */
-        if ((pDeauthIndMsg->reasonCode == eSIR_BEACON_MISSED) ||
-                (pDeauthIndMsg->reasonCode ==
-                 eSIR_MAC_DISASSOC_DUE_TO_INACTIVITY_REASON))
-            pSession->joinFailStatusCode.reasonCode = 0;
-        else
-            pSession->joinFailStatusCode.reasonCode = pDeauthIndMsg->reasonCode;
-
-       /* cfg layer expects 0 as reason code if
-          the driver dosent know the reason code
-          eSIR_BEACON_MISSED is defined as locally */
+        pSession->joinFailStatusCode.reasonCode = pDeauthIndMsg->reasonCode;
     }
     else
     {
@@ -11121,16 +11133,6 @@ eHalStatus csrRoamLostLink( tpAniSirGlobal pMac, tANI_U32 sessionId, tANI_U32 ty
     }
     if(!fToRoam)
     {
-        //Tell HDD about the lost link
-        if(!CSR_IS_INFRA_AP(&pSession->connectedProfile))
-        {
-            /* Don't call csrRoamCallCallback for GO/SoftAp case as this indication
-             * was already given as part of eWNI_SME_DISASSOC_IND msg handling in
-             * csrRoamCheckForLinkStatusChange API.
-             */
-            csrRoamCallCallback(pMac, sessionId, &roamInfo, 0, eCSR_ROAM_LOSTLINK, result);
-        }
-
        /*No need to start idle scan in case of IBSS/SAP 
          Still enable idle scan for polling in case concurrent sessions are running */
         if(CSR_IS_INFRASTRUCTURE(&pSession->connectedProfile))
@@ -14962,7 +14964,8 @@ eHalStatus csrProcessDelStaSessionCommand( tpAniSirGlobal pMac, tSmeCmd *pComman
    return csrSendMBDelSelfStaReqMsg( pMac, 
          pCommand->u.delStaSessionCmd.selfMacAddr );
 }
-static void purgeCsrSessionCmdList(tpAniSirGlobal pMac, tANI_U32 sessionId)
+static void purgeCsrSessionCmdList(tpAniSirGlobal pMac, tANI_U32 sessionId,
+   bool flush_all)
 {
     tDblLinkList *pList = &pMac->roam.roamCmdPendingList;
     tListElem *pEntry, *pNext;
@@ -14981,6 +14984,13 @@ static void purgeCsrSessionCmdList(tpAniSirGlobal pMac, tANI_U32 sessionId)
     {
         pNext = csrLLNext(pList, pEntry, LL_ACCESS_NOLOCK);
         pCommand = GET_BASE_ADDR( pEntry, tSmeCmd, Link );
+
+        if (!flush_all &&
+            csr_is_disconnect_full_power_cmd(pCommand)) {
+            smsLog(pMac, LOGW, FL(" Ignore disconnect"));
+            pEntry = pNext;
+            continue;
+        }
         if(pCommand->sessionId == sessionId)
         {
             if(csrLLRemoveEntry(pList, pEntry, LL_ACCESS_NOLOCK))
@@ -15013,28 +15023,25 @@ void csrCleanupSession(tpAniSirGlobal pMac, tANI_U32 sessionId)
 #ifdef FEATURE_WLAN_BTAMP_UT_RF
         vos_timer_destroy(&pSession->hTimerJoinRetry);
 #endif
-        purgeSmeSessionCmdList(pMac, sessionId, &pMac->sme.smeCmdPendingList);
-        if (pMac->fScanOffload)
-        {
-            purgeSmeSessionCmdList(pMac, sessionId,
-                    &pMac->sme.smeScanCmdPendingList);
-        }
-
-        purgeCsrSessionCmdList(pMac, sessionId);
+        csrPurgeSmeCmdList(pMac, sessionId, true);
         csrInitSession(pMac, sessionId);
     }
 }
 
-void csrPurgeSmeCmdList(tpAniSirGlobal pMac, tANI_U32 sessionId)
+void csrPurgeSmeCmdList(tpAniSirGlobal pMac, tANI_U32 sessionId,
+     bool flush_all)
 {
     purgeSmeSessionCmdList(pMac, sessionId,
-            &pMac->sme.smeCmdPendingList);
+            &pMac->sme.smeCmdPendingList,
+            flush_all);
     if (pMac->fScanOffload)
     {
         purgeSmeSessionCmdList(pMac, sessionId,
-                &pMac->sme.smeScanCmdPendingList);
+                &pMac->sme.smeScanCmdPendingList,
+                flush_all);
     }
-    purgeCsrSessionCmdList(pMac, sessionId);
+    purgeCsrSessionCmdList(pMac, sessionId,
+                           flush_all);
 }
 
 eHalStatus csrRoamCloseSession( tpAniSirGlobal pMac, tANI_U32 sessionId,
@@ -15052,8 +15059,7 @@ eHalStatus csrRoamCloseSession( tpAniSirGlobal pMac, tANI_U32 sessionId,
         }
         else
         {
-            if(bPurgeList)
-                csrPurgeSmeCmdList(pMac, sessionId);
+            csrPurgeSmeCmdList(pMac, sessionId, bPurgeList);
            /*  If bPurgeList is FALSE, it means HDD already free all the
             *  cmd and later queue few essential cmd. Now sme should process
             *  the cmd in  pending queue order only.Hence we should
