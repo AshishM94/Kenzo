@@ -292,7 +292,7 @@ static void wcd_clsh_set_hph_mode(struct snd_soc_codec *codec,
 		ipeak = DELTA_I_50MA;
 		break;
 	case CLS_H_HIFI:
-		val = 0x08;
+		val = 0x04; /*switch to flyback mode*/
 		gain = DAC_GAIN_M0P2DB;
 		ipeak = DELTA_I_50MA;
 		break;
