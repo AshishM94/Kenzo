@@ -1923,6 +1923,10 @@ VOS_STATUS hdd_wlan_shutdown(void)
    }
 
    hdd_reset_all_adapters(pHddCtx);
+
+   /* set default value of Tcp delack and stop timer */
+   hdd_set_default_stop_delack_timer(pHddCtx);
+
    /* DeRegister with platform driver as client for Suspend/Resume */
    vosStatus = hddDeregisterPmOps(pHddCtx);
    if ( !VOS_IS_STATUS_SUCCESS( vosStatus ) )
