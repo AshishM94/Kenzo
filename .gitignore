@@ -34,7 +34,6 @@ modules.builtin
 *.gcno
 *.img
 *.rej
-*build.sh
 
 #
 # Top-level generic files
