@@ -34,6 +34,9 @@ dump_boot;
 
 # begin ramdisk changes
 
+# add zetsubou initialization script
+insert_line init.rc "import /init.zetsubou.rc" after "import /init.cm.rc" "import /init.zetsubou.rc";
+
 # end ramdisk changes
 
 write_boot;
