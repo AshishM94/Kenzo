@@ -37,6 +37,12 @@ dump_boot;
 # add zetsubou initialization script
 insert_line init.rc "import /init.zetsubou.rc" after "import /init.cm.rc" "import /init.zetsubou.rc";
 
+# fstab default to noatime
+patch_fstab fstab.qcom /data f2fs options "nosuid,nodev,noatime,nodiratime,inline_xattr,data_flush                        wait,check,encryptable=footer,formattable,length=-16384" "nosuid,nodev,noatime,inline_xattr,data_flush                        wait,check,encryptable=footer,formattable,length=-16384"
+patch_fstab fstab.qcom /data ext4 options "nosuid,nodev,noatime,nodiratime,barrier=1,noauto_da_alloc                      wait,check,encryptable=footer,formattable,length=-16384" "nosuid,nodev,noatime,barrier=1,noauto_da_alloc                      wait,check,encryptable=footer,formattable,length=-16384"
+patch_fstab fstab.qcom /cache f2fs options "nosuid,nodev,noatime,nodiratime,inline_xattr,flush_merge,data_flush            wait,check,formattable" "nosuid,nodev,noatime,inline_xattr,flush_merge,data_flush            wait,check,formattable"
+patch_fstab fstab.qcom /cache ext4 options "nosuid,nodev,noatime,nodiratime,barrier=1                                      wait,check,formattable" "nosuid,nodev,noatime,barrier=1                                      wait,check,formattable"
+
 # Add frandom compatibility
 backup_file ueventd.rc;
 insert_line ueventd.rc "frandom" after "urandom" "/dev/frandom              0666   root       root\n";
