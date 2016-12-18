@@ -3299,7 +3299,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 			mxt_secure_touch_stop(mxt_dev_data, 0);
 		else if (event == FB_EVENT_BLANK) {
 			blank = evdata->data;
-			if (*blank == FB_BLANK_UNBLANK)
+			if (*blank == FB_BLANK_UNBLANK || *blank == FB_BLANK_NORMAL)
 				mxt_resume(&mxt_dev_data->client->dev);
 			else if (*blank == FB_BLANK_POWERDOWN)
 				mxt_suspend(&mxt_dev_data->client->dev);
