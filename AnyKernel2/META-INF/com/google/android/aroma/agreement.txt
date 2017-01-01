@@ -1,0 +1,5 @@
+
+
+<b>Agreement:</b>
+
+<*>I will not be held responsible for anything that happens to your device after flashing this kernel. If you don't know how to bring your dead device back to life please don't make any modifications and stay with stock MIUI. This is only meant for advanced users.</*>

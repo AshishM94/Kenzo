@@ -1,0 +1,9 @@
+ce72259 - Dmitry Torokhov, 4 days ago : ANDROID: hid: uhid: implement refcount for open and close
+7574e11 - Eric Dumazet, 2 weeks ago : ipv6: fix out of bound writes in __ip6_append_data()
+654519f - Eric Dumazet, 2 weeks ago : sctp: do not inherit ipv6_{mc|ac|fl}_list from parent
+c9dfba5 - Craig Gallek, 3 weeks ago : ipv6: Prevent overrun when parsing v6 header options
+d9fc33c - WANG Cong, 3 weeks ago : ipv6/dccp: do not inherit ipv6_mc_list from parent
+efd2d89 - Eric Dumazet, 4 weeks ago : dccp/tcp: do not inherit mc_list from parent syzkaller found a way to trigger double frees from ip_mc_drop_socket()
+c20b95c - Chris Salls, 8 weeks ago : mm/mempolicy.c: fix error handling in set_mempolicy and mbind.
+6a50c6b - Peter Zijlstra, 5 months ago : perf/core: Fix concurrent sys_perf_event_open() vs. 'move_group' race
+3570f9d - Kees Cook, 6 months ago : net: ping: check minimum size on ICMP header length
