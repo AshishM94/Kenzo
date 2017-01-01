@@ -262,7 +262,8 @@ static inline struct page* find_get_page(struct address_space *mapping,
 {
 	return find_get_page_flags(mapping, index, 0);
 }
-
+pgoff_t page_cache_next_hole(struct address_space *mapping,
+                             pgoff_t index, unsigned long max_scan);
 
 extern struct page * find_lock_page(struct address_space *mapping,
 				pgoff_t index);
