@@ -35,7 +35,7 @@ dump_boot;
 # begin ramdisk changes
 
 # add zetsubou initialization script
-insert_line init.rc "import /init.zetsubou.rc" after "import /init.cm.rc" "import /init.zetsubou.rc";
+insert_line init.rc "import /init.zetsubou.rc" after "import /init.environ.rc" "import /init.zetsubou.rc";
 
 # fstab default to noatime
 patch_fstab fstab.qcom /data f2fs options "nosuid,nodev,noatime,nodiratime,inline_xattr,data_flush                        wait,check,encryptable=footer,formattable,length=-16384" "nosuid,nodev,noatime,inline_xattr,data_flush                        wait,check,encryptable=footer,formattable,length=-16384"
@@ -50,6 +50,12 @@ insert_line ueventd.rc "erandom" after "urandom" "/dev/erandom              0666
 backup_file file_contexts;
 insert_line file_contexts "frandom" after "urandom" "/dev/frandom		u:object_r:frandom_device:s0\n";
 insert_line file_contexts "erandom" after "urandom" "/dev/erandom               u:object_r:erandom_device:s0\n";
+
+#add zram to fstab
+if [ $(grep -c "zram0" $ramdisk/fstab.qcom) == 0 ]; then
+   echo "/dev/block/zram0 none swap defaults zramsize=536870912" >> $ramdisk/fstab.qcom
+fi
+insert_line init.qcom.rc "swapon_all fstab.qcom" after "mount_all fstab.qcom" "swapon_all fstab.qcom";
 
 # end ramdisk changes
 

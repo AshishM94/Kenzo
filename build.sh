@@ -68,8 +68,8 @@ echo "          creating flashable zip          "
 echo -e "***********************************************$nocol"
 cd $ZIP_DIR
 make clean
-cp $DT_IMG $ZIP_DIR/dtb
-cp $KERN_IMG $ZIP_DIR/zImage
+cp $DT_IMG $ZIP_DIR/anykernel/dtb
+cp $KERN_IMG $ZIP_DIR/anykernel/zImage
 make
 BUILD_END=$(date +"%s")
 DIFF=$(($BUILD_END - $BUILD_START))

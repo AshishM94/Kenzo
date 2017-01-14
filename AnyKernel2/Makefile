@@ -20,6 +20,6 @@ $(ZIP):
 
 clean:
 	@rm -vf "$(NAME)-"*.zip*
-	@rm -vf dtb
-	@rm -vf zImage
+	@rm -vf anykernel/dtb
+	@rm -vf anykernel/zImage
 	@echo "Done."
