@@ -71,6 +71,7 @@ make clean
 cp $DT_IMG $ZIP_DIR/anykernel/dtb
 cp $KERN_IMG $ZIP_DIR/anykernel/zImage
 make
+make sign
 BUILD_END=$(date +"%s")
 DIFF=$(($BUILD_END - $BUILD_START))
 echo -e "$yellow Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nocol"

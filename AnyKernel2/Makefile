@@ -2,11 +2,11 @@ NAME ?= Zetsubou
 
 VERSION ?= N
 
-DATE := $(shell date +'%Y%m%d-%H%M')
+DATE := $(shell date +'%Y%m%d')
 
 ZIP := $(NAME)-$(VERSION)-$(DATE).zip
 
-EXCLUDE := Makefile *.git*
+EXCLUDE := Makefile *.git* *.jar*
 
 all: $(ZIP)
 
@@ -23,3 +23,6 @@ clean:
 	@rm -vf anykernel/dtb
 	@rm -vf anykernel/zImage
 	@echo "Done."
+
+sign:
+	java -classpath testsign.jar testsign "$(NAME)-$(VERSION)-$(DATE)".zip "$(NAME)-$(VERSION)-$(DATE)"-signed.zip

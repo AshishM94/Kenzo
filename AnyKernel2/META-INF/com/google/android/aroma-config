@@ -17,10 +17,10 @@
 ###
 
 ini_set("rom_name",             "Zetsubou Kernel");
-ini_set("rom_version",          "140117");
+ini_set("rom_version",          "160117");
 ini_set("rom_author",           "Ashish94");
 ini_set("rom_device",           "Xiaomi Redmi Note 3");
-ini_set("rom_date",             "Jan 14, 2016");
+ini_set("rom_date",             "Jan 16, 2016");
 
 ini_set("force_colorspace","rgba");
 ini_set("dp","5");
@@ -43,7 +43,7 @@ fontresload( "1", "ttf/Roboto-Regular.ttf", "18" );
 theme("zetsubou");
 
 viewbox(
-    "<@center>\nZetsubou Kernel</@>",
+    "\nZetsubou Kernel",
 
     "<@center>\nfor <b>" + ini_get("rom_device") + "               </b>\n\n</@>" +
     "\n\n\n\n  VERSION\t: <b><#selectbg_g>"+ini_get("rom_version")+"</#></b>\n" +
