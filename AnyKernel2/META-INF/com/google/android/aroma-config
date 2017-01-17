@@ -16,12 +16,6 @@
 #
 ###
 
-ini_set("rom_name",             "Zetsubou Kernel");
-ini_set("rom_version",          "160117");
-ini_set("rom_author",           "Ashish94");
-ini_set("rom_device",           "Xiaomi Redmi Note 3");
-ini_set("rom_date",             "Jan 16, 2016");
-
 ini_set("force_colorspace","rgba");
 ini_set("dp","5");
 
@@ -41,18 +35,6 @@ fontresload( "0", "ttf/Roboto-Regular.ttf", "12" );
 fontresload( "1", "ttf/Roboto-Regular.ttf", "18" ); 
 
 theme("zetsubou");
-
-viewbox(
-    "\nZetsubou Kernel",
-
-    "<@center>\nfor <b>" + ini_get("rom_device") + "               </b>\n\n</@>" +
-    "\n\n\n\n  VERSION\t: <b><#selectbg_g>"+ini_get("rom_version")+"</#></b>\n" +
-    "  AUTHOR \t: <b><#selectbg_g>"+ini_get("rom_author")+"</#></b>\n" +
-    "  RELEASED\t: <b><#selectbg_g>"+ini_get("rom_date")+"</#></b>\n\n\n" +
-    "Press Next to Continue...",
-
-    "@welcome"
-);
 
 agreebox(
    "\nTerms Of Use",
@@ -128,13 +110,26 @@ selectbox(
   "1612MHz","",0
 );
 
+selectbox(
+  "\nCPU Governor","<@center><b>\nSelect the governor you would like to use for your CPU</b>\n\n</@>","","gov.prop",
+  "chill","",0,
+  "despair","",0,
+  "impulse","",0,
+  "interactive","(recommended)",1,
+  "conservative","",0,
+  "ondemand","",0,
+  "powersave","",0,
+  "bioshock","",0,
+  "performance","",0
+);
+
 checkbox(
   "\nWake Gestures","<@center><b>\nSelect the screen gestures you would like to use</b>\n\n</@>","","gest.prop",
   
   "Wake Gestures","<b>Sweep or double tap to wake up phone</b>",2,
   "Sweep right","",0,
   "Sweep left","",0,
-  "Sweep up","",0,
+  "Sweep up","",1,
   "Sweep down","",0,
   "Double tap","",0,
 
@@ -144,14 +139,30 @@ checkbox(
 
 selectbox(
   "\nSweep2Sleep","<@center><b>\nSweep across navbar area to put phone to sleep</b>\n\n</@>","","s2s.prop",
-  "Disable Sweep2Sleep","",1,
+  "Disable Sweep2Sleep","",0,
   "Sweep right","",0,
-  "Sweep left","(default)",0,
-  "Sweep left or right","",0
+  "Sweep left","",0,
+  "Sweep left or right","",1
 );
 
 selectbox(
-  "\nDisplay & Sound","<@center><b>\nEnable/Disable the following features</b>\n\n</@>","","misc.prop",
+  "\nI/O Schedulers","<@center><b>\nSelect the I/O scheduler you would like to use</b>\n\n</@>","","sched.prop",
+  "noop","",0,
+  "deadline","",0,
+  "row","",0,
+  "sio","",0,
+  "cfq","",0,
+  "bfq","",0,
+  "fiops","",0,
+  "zen","(recommended)",1,
+  "sioplus","",0,
+  "tripndroid","",0,
+  "vr","",0,
+  "fifo","",0
+);
+
+selectbox(
+  "\nDisplay & Sound","<@center><b>\nSelect your desired color and sound profile</b>\n\n</@>","","misc.prop",
   "KCAL advanced color control", "", 2,
   "Stock","",0,
   "Cool","Selecting this option will tint your screen blue for great daylight display",1,
@@ -166,8 +177,8 @@ selectbox(
 
 ini_set("text_next", "Install");
 textbox(
-  "Installation",
-  "Are you ready to install Zetsubou based on your preferences?",
+  "\nInstallation",
+  "<@center><b>\nAre you ready to install Zetsubou based on your preferences?</b>\n\n</@>",
   "",
   "\nPress <b>Install</b> to perform the install.\n\n" +
   "If you want to review or change any of your settings, press <b>Back</b>."

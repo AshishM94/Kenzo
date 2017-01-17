@@ -72,8 +72,16 @@ echo "#adreno-boost" >> $CONFIGFILE
 echo "write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 1" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
 
+echo "#Display & Sound" >> $CONFIGFILE
+echo "write /sys/devices/platform/kcal_ctrl.0/kcal \"223 223 255"\" >> $CONFIGFILE
+echo "write /sys/devices/platform/kcal_ctrl.0/kcal_sat 271" >> $CONFIGFILE
+echo "write /sys/kernel/sound_control/headphone_pa_gain \"5 5"\" >> $CONFIGFILE
+echo "write /sys/kernel/sound_control/speaker_gain 18" >> $CONFIGFILE
+
+echo "" >> $CONFIGFILE
+
 echo "# Set Swappiness" >> $CONFIGFILE
-echo "write /proc/sys/vm/swappiness 10" >> $CONFIGFILE
+echo "write /proc/sys/vm/swappiness 0" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
 
 echo "#enable laptop mode" >> $CONFIGFILE

@@ -55,7 +55,35 @@ insert_line file_contexts "erandom" after "urandom" "/dev/erandom               
 if [ $(grep -c "zram0" $ramdisk/fstab.qcom) == 0 ]; then
    echo "/dev/block/zram0 none swap defaults zramsize=536870912" >> $ramdisk/fstab.qcom
 fi
-insert_line init.qcom.rc "swapon_all fstab.qcom" after "mount_all fstab.qcom" "swapon_all fstab.qcom";
+insert_line init.qcom.rc "swapon_all fstab.qcom" after "mount_all fstab.qcom" "    swapon_all fstab.qcom";
+
+#set io scheduler
+SCHED=`grep selected.0 /tmp/aroma/sched.prop | cut -d '=' -f2`
+if [ $SCHED = 1 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"noop\"";
+elif [ $SCHED = 2 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"deadline\"";
+elif [ $SCHED = 3 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"row\"";
+elif [ $SCHED = 4 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"sio\"";
+elif [ $SCHED = 5 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"cfq\"";
+elif [ $SCHED = 6 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"bfq\"";
+elif [ $SCHED = 7 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"fiops\"";
+elif [ $SCHED = 8 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"zen\"";
+elif [ $SCHED = 9 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"sioplus\"";
+elif [ $SCHED = 10 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"tripndroid\"";
+elif [ $SCHED = 11 ]; then
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"vr\"";
+else
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"fifo\"";
+fi;
 
 # end ramdisk changes
 
