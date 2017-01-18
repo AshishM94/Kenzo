@@ -145,15 +145,15 @@ echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor despair" >> $C
 elif [ $gov = 3 ]; then
 echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor impulse" >> $CONFIGFILE
 elif [ $gov = 4 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor relaxed" >> $CONFIGFILE
 elif [ $gov = 5 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor conservative" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive" >> $CONFIGFILE
 elif [ $gov = 6 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor conservative" >> $CONFIGFILE
 elif [ $gov = 7 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand" >> $CONFIGFILE
 elif [ $gov = 8 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor bioshock" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave" >> $CONFIGFILE
 elif [ $gov = 9 ]; then
 echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor bioshock" >> $CONFIGFILE
 else
@@ -169,15 +169,15 @@ echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor despair" >> $C
 elif [ $gov = 3 ]; then
 echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor impulse" >> $CONFIGFILE
 elif [ $gov = 4 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor relaxed" >> $CONFIGFILE
 elif [ $gov = 5 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor conservative" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive" >> $CONFIGFILE
 elif [ $gov = 6 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor ondemand" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor conservative" >> $CONFIGFILE
 elif [ $gov = 7 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor powersave" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor ondemand" >> $CONFIGFILE
 elif [ $gov = 8 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor bioshock" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor powersave" >> $CONFIGFILE
 elif [ $gov = 9 ]; then
 echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor bioshock" >> $CONFIGFILE
 else

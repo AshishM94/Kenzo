@@ -115,6 +115,7 @@ selectbox(
   "chill","",0,
   "despair","",0,
   "impulse","",0,
+  "relaxed","",0,
   "interactive","(recommended)",1,
   "conservative","",0,
   "ondemand","",0,
