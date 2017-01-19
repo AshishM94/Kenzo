@@ -301,7 +301,7 @@ static void btusb_intr_complete(struct urb *urb)
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
+	BT_DBG("%s urb %pK status %d count %d", hdev->name,
 					urb, urb->status, urb->actual_length);
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
@@ -332,7 +332,7 @@ static void btusb_intr_complete(struct urb *urb)
 		/* -EPERM: urb is being killed;
 		 * -ENODEV: device got disconnected */
 		if (err != -EPERM && err != -ENODEV)
-			BT_ERR("%s urb %p failed to resubmit (%d)",
+			BT_ERR("%s urb %pK failed to resubmit (%d)",
 						hdev->name, urb, -err);
 		usb_unanchor_urb(urb);
 	}
@@ -376,7 +376,7 @@ static int btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
 		if (err != -EPERM && err != -ENODEV)
-			BT_ERR("%s urb %p submission failed (%d)",
+			BT_ERR("%s urb %pK submission failed (%d)",
 						hdev->name, urb, -err);
 		usb_unanchor_urb(urb);
 	}
@@ -392,7 +392,7 @@ static void btusb_bulk_complete(struct urb *urb)
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
+	BT_DBG("%s urb %pK status %d count %d", hdev->name,
 					urb, urb->status, urb->actual_length);
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
@@ -423,7 +423,7 @@ static void btusb_bulk_complete(struct urb *urb)
 		/* -EPERM: urb is being killed;
 		 * -ENODEV: device got disconnected */
 		if (err != -EPERM && err != -ENODEV)
-			BT_ERR("%s urb %p failed to resubmit (%d)",
+			BT_ERR("%s urb %pK failed to resubmit (%d)",
 						hdev->name, urb, -err);
 		usb_unanchor_urb(urb);
 	}
@@ -465,7 +465,7 @@ static int btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
 		if (err != -EPERM && err != -ENODEV)
-			BT_ERR("%s urb %p submission failed (%d)",
+			BT_ERR("%s urb %pK submission failed (%d)",
 						hdev->name, urb, -err);
 		usb_unanchor_urb(urb);
 	}
@@ -481,7 +481,7 @@ static void btusb_isoc_complete(struct urb *urb)
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int i, err;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
+	BT_DBG("%s urb %pK status %d count %d", hdev->name,
 					urb, urb->status, urb->actual_length);
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
@@ -519,7 +519,7 @@ static void btusb_isoc_complete(struct urb *urb)
 		/* -EPERM: urb is being killed;
 		 * -ENODEV: device got disconnected */
 		if (err != -EPERM && err != -ENODEV)
-			BT_ERR("%s urb %p failed to resubmit (%d)",
+			BT_ERR("%s urb %pK failed to resubmit (%d)",
 						hdev->name, urb, -err);
 		usb_unanchor_urb(urb);
 	}
@@ -587,7 +587,7 @@ static int btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
 		if (err != -EPERM && err != -ENODEV)
-			BT_ERR("%s urb %p submission failed (%d)",
+			BT_ERR("%s urb %pK submission failed (%d)",
 						hdev->name, urb, -err);
 		usb_unanchor_urb(urb);
 	}
@@ -603,7 +603,7 @@ static void btusb_tx_complete(struct urb *urb)
 	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
+	BT_DBG("%s urb %pK status %d count %d", hdev->name,
 					urb, urb->status, urb->actual_length);
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
@@ -629,7 +629,7 @@ static void btusb_isoc_tx_complete(struct urb *urb)
 	struct sk_buff *skb = urb->context;
 	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name,
+	BT_DBG("%s urb %pK status %d count %d", hdev->name,
 					urb, urb->status, urb->actual_length);
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
@@ -835,7 +835,7 @@ skip_waking:
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
 		if (err != -EPERM && err != -ENODEV)
-			BT_ERR("%s urb %p submission failed (%d)",
+			BT_ERR("%s urb %pK submission failed (%d)",
 						hdev->name, urb, -err);
 		kfree(urb->setup_packet);
 		usb_unanchor_urb(urb);
@@ -1362,7 +1362,7 @@ static int btusb_probe(struct usb_interface *intf,
 	int i, err;
 	struct ath3k_version version;
 
-	BT_DBG("intf %p id %p", intf, id);
+	BT_DBG("intf %pK id %pK", intf, id);
 
 	/* interface numbers are hardcoded in the spec */
 	if (intf->cur_altsetting->desc.bInterfaceNumber != 0)
@@ -1539,7 +1539,7 @@ static void btusb_disconnect(struct usb_interface *intf)
 	struct btusb_data *data = usb_get_intfdata(intf);
 	struct hci_dev *hdev;
 
-	BT_DBG("intf %p", intf);
+	BT_DBG("intf %pK", intf);
 
 	if (!data)
 		return;
@@ -1574,7 +1574,7 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct btusb_data *data = usb_get_intfdata(intf);
 
-	BT_DBG("intf %p", intf);
+	BT_DBG("intf %pK", intf);
 
 	if (data->suspend_count++)
 		return 0;
@@ -1619,7 +1619,7 @@ static int btusb_resume(struct usb_interface *intf)
 	struct hci_dev *hdev = data->hdev;
 	int err = 0;
 
-	BT_DBG("intf %p", intf);
+	BT_DBG("intf %pK", intf);
 
 	if (--data->suspend_count)
 		return 0;

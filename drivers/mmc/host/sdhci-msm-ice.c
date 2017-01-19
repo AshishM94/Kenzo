@@ -65,7 +65,7 @@ int sdhci_msm_ice_get_dev(struct sdhci_host *host)
 	struct sdhci_msm_host *msm_host = pltfm_host->priv;
 
 	if (!msm_host || !msm_host->pdev) {
-		pr_err("%s: invalid msm_host %p or msm_host->pdev\n",
+		pr_err("%s: invalid msm_host %pK or msm_host->pdev\n",
 			__func__, msm_host);
 		return -EINVAL;
 	}

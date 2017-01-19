@@ -211,7 +211,7 @@ static __init struct cma *cma_create_area(unsigned long base_pfn,
 	}
 	mutex_init(&cma->lock);
 
-	pr_debug("%s: returned %p\n", __func__, (void *)cma);
+	pr_debug("%s: returned %pK\n", __func__, (void *)cma);
 	return cma;
 
 error:
@@ -722,7 +722,7 @@ unsigned long dma_alloc_from_contiguous(struct device *dev, size_t count,
 		tries++;
 		trace_dma_alloc_contiguous_retry(tries);
 
-		pr_debug("%s(): memory range at %p is busy, retrying\n",
+		pr_debug("%s(): memory range at %pK is busy, retrying\n",
 			 __func__, pfn_to_page(pfn));
 		/* try again with a bit different memory target */
 		start = pageno + mask + 1;

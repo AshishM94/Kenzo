@@ -529,7 +529,7 @@ static int cnss_configure_ramdump(void)
 		}
 	}
 
-	pr_info("%s: ramdump addr: %p, phys: %pa subsys:'%s'\n", __func__,
+	pr_info("%s: ramdump addr: %pK, phys: %pa subsys:'%s'\n", __func__,
 		ssr_info->ramdump_addr, &ssr_info->ramdump_phys,
 		ssr_info->subsys_name);
 
@@ -821,7 +821,7 @@ int cnss_sdio_wlan_register_driver(struct cnss_sdio_wlan_driver *driver)
 
 	cnss_info = &cnss_pdata->cnss_sdio_info;
 	if (cnss_info->wdrv)
-		pr_debug("%s:wdrv already exists wdrv(%p)\n", __func__,
+		pr_debug("%s:wdrv already exists wdrv(%pK)\n", __func__,
 			 cnss_info->wdrv);
 
 	cnss_info->wdrv = driver;

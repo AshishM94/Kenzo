@@ -328,7 +328,7 @@ static int rmnet_mhi_poll(struct napi_struct *napi, int budget)
 		skb_priv->dma_size = cur_mru;
 
 		rmnet_log(MSG_VERBOSE,
-		  "Allocated SKB of MRU 0x%x, SKB_DATA 0%p SKB_LEN 0x%x\n",
+		  "Allocated SKB of MRU 0x%x, SKB_DATA 0%pK SKB_LEN 0x%x\n",
 				rmnet_mhi_ptr->mru, skb->data, skb->len);
 		/* Reserve headroom, tail == data */
 		skb_reserve(skb, MHI_RX_HEADROOM);
@@ -339,7 +339,7 @@ static int rmnet_mhi_poll(struct napi_struct *napi, int budget)
 					DMA_FROM_DEVICE);
 
 		rmnet_log(MSG_VERBOSE,
-			 "Mapped SKB %p to DMA Addr 0x%lx, DMA_SIZE: 0x%lx\n",
+			 "Mapped SKB %pK to DMA Addr 0x%lx, DMA_SIZE: 0x%lx\n",
 			  skb->data,
 			  (uintptr_t)skb_priv->dma_addr,
 			  (uintptr_t)skb_priv->dma_size);

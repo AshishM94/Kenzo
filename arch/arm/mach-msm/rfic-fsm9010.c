@@ -611,7 +611,7 @@ static int ftr_probe(struct platform_device *pdev)
 	struct clk *pdm_clk, *pdm2_clk;
 	int ret;
 
-	pr_debug("%s: me = %p, parent = %p\n",
+	pr_debug("%s: me = %pK, parent = %pK\n",
 		__func__, pdev, pdev->dev.parent);
 
 	pdm_clk = NULL;

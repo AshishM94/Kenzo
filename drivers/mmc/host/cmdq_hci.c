@@ -153,7 +153,7 @@ static void cmdq_dump_adma_mem(struct cmdq_host *cq_host)
 
 	for_each_set_bit(tag, &data_active_reqs, cq_host->num_slots) {
 		paddr = get_trans_desc_dma(cq_host, tag);
-		pr_err("%s: %s: tag = %d, trans_dma(phys) = %pad, trans_desc(virt) = 0x%p\n",
+		pr_err("%s: %s: tag = %d, trans_dma(phys) = %pad, trans_desc(virt) = 0x%pK\n",
 				mmc_hostname(mmc), __func__, tag,
 				&paddr, get_trans_desc(cq_host, tag));
 		print_hex_dump(KERN_ERR, "cmdq-adma:", DUMP_PREFIX_ADDRESS,
@@ -286,7 +286,7 @@ static int cmdq_host_alloc_tdl(struct cmdq_host *cq_host)
 	if (!cq_host->desc_base || !cq_host->trans_desc_base)
 		return -ENOMEM;
 
-	pr_info("desc-base: 0x%p trans-base: 0x%p\n desc_dma 0x%llx trans_dma: 0x%llx\n",
+	pr_info("desc-base: 0x%pK trans-base: 0x%pK\n desc_dma 0x%llx trans_dma: 0x%llx\n",
 		 cq_host->desc_base, cq_host->trans_desc_base,
 		(unsigned long long)cq_host->desc_dma_base,
 		(unsigned long long) cq_host->trans_desc_dma_base);
@@ -546,7 +546,7 @@ static int cmdq_prep_tran_desc(struct mmc_request *mrq,
 		desc += cq_host->trans_desc_len;
 	}
 
-	pr_debug("%s: req: 0x%p tag: %d calc_trans_des: 0x%p sg-cnt: %d\n",
+	pr_debug("%s: req: 0x%pK tag: %d calc_trans_des: 0x%pK sg-cnt: %d\n",
 		__func__, mrq->req, tag, desc, sg_count);
 
 	return 0;

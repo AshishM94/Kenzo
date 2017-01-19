@@ -2774,7 +2774,7 @@ static void ext4_free_data_callback(struct super_block *sb,
 	struct ext4_group_info *db;
 	int err, count = 0, count2 = 0;
 
-	mb_debug(1, "gonna free %u blocks in group %u (0x%p):",
+	mb_debug(1, "gonna free %u blocks in group %u (0x%pK):",
 		 entry->efd_count, entry->efd_group, entry);
 
 	if (test_opt(sb, DISCARD)) {
@@ -3277,7 +3277,7 @@ static void ext4_mb_use_inode_pa(struct ext4_allocation_context *ac,
 	BUG_ON(pa->pa_free < len);
 	pa->pa_free -= len;
 
-	mb_debug(1, "use %llu/%u from inode pa %p\n", start, len, pa);
+	mb_debug(1, "use %llu/%u from inode pa %pK\n", start, len, pa);
 }
 
 /*
@@ -3301,7 +3301,7 @@ static void ext4_mb_use_group_pa(struct ext4_allocation_context *ac,
 	 * in on-disk bitmap -- see ext4_mb_release_context()
 	 * Other CPUs are prevented from allocating from this pa by lg_mutex
 	 */
-	mb_debug(1, "use %u/%u from group pa %p\n", pa->pa_lstart-len, len, pa);
+	mb_debug(1, "use %u/%u from group pa %pK\n", pa->pa_lstart-len, len, pa);
 }
 
 /*
@@ -3627,7 +3627,7 @@ ext4_mb_new_inode_pa(struct ext4_allocation_context *ac)
 	pa->pa_deleted = 0;
 	pa->pa_type = MB_INODE_PA;
 
-	mb_debug(1, "new inode pa %p: %llu/%u for %u\n", pa,
+	mb_debug(1, "new inode pa %pK: %llu/%u for %u\n", pa,
 			pa->pa_pstart, pa->pa_len, pa->pa_lstart);
 	trace_ext4_mb_new_inode_pa(ac, pa);
 
@@ -3687,7 +3687,7 @@ ext4_mb_new_group_pa(struct ext4_allocation_context *ac)
 	pa->pa_deleted = 0;
 	pa->pa_type = MB_GROUP_PA;
 
-	mb_debug(1, "new group pa %p: %llu/%u for %u\n", pa,
+	mb_debug(1, "new group pa %pK: %llu/%u for %u\n", pa,
 			pa->pa_pstart, pa->pa_len, pa->pa_lstart);
 	trace_ext4_mb_new_group_pa(ac, pa);
 
@@ -3770,7 +3770,7 @@ ext4_mb_release_inode_pa(struct ext4_buddy *e4b, struct buffer_head *bitmap_bh,
 	}
 	if (free != pa->pa_free) {
 		ext4_msg(e4b->bd_sb, KERN_CRIT,
-			 "pa %p: logic %lu, phys. %lu, len %lu",
+			 "pa %pK: logic %lu, phys. %lu, len %lu",
 			 pa, (unsigned long) pa->pa_lstart,
 			 (unsigned long) pa->pa_pstart,
 			 (unsigned long) pa->pa_len);

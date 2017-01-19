@@ -129,7 +129,7 @@ int sps_mem_init(phys_addr_t pipemem_phys_base, u32 pipemem_size)
 
 		iomem_offset = 0;
 		SPS_DBG(sps,
-			"sps:sps_mem_init.iomem_phys=%pa,iomem_virt=0x%p.",
+			"sps:sps_mem_init.iomem_phys=%pa,iomem_virt=0x%pK.",
 			&iomem_phys, iomem_virt);
 	}
 

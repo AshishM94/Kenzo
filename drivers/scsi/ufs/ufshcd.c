@@ -2442,7 +2442,7 @@ static int ufshcd_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
 	tag = cmd->request->tag;
 	if (!ufshcd_valid_tag(hba, tag)) {
 		dev_err(hba->dev,
-			"%s: invalid command tag %d: cmd=0x%p, cmd->request=0x%p",
+			"%s: invalid command tag %d: cmd=0x%pK, cmd->request=0x%pK",
 			__func__, tag, cmd, cmd->request);
 		BUG();
 	}
@@ -5874,7 +5874,7 @@ static int ufshcd_abort(struct scsi_cmnd *cmd)
 	tag = cmd->request->tag;
 	if (!ufshcd_valid_tag(hba, tag)) {
 		dev_err(hba->dev,
-			"%s: invalid command tag %d: cmd=0x%p, cmd->request=0x%p",
+			"%s: invalid command tag %d: cmd=0x%pK, cmd->request=0x%pK",
 			__func__, tag, cmd, cmd->request);
 		BUG();
 	}

@@ -288,7 +288,7 @@ int ipa_connect(const struct ipa_connect_params *in, struct ipa_sps_params *sps,
 	if (ipa_ctx->smmu_present &&
 			(in->desc.base == NULL ||
 			 in->data.base == NULL)) {
-		IPAERR(" allocate FIFOs data_fifo=0x%p desc_fifo=0x%p.\n",
+		IPAERR(" allocate FIFOs data_fifo=0x%pK desc_fifo=0x%pK.\n",
 				in->data.base, in->desc.base);
 		goto desc_mem_alloc_fail;
 	}

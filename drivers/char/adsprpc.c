@@ -1818,19 +1818,19 @@ static int __init fastrpc_device_init(void)
 	}
 	domain = iommu_group_get_iommudata(group);
 	if (IS_ERR_OR_NULL(domain)) {
-		pr_err("Failed to get domain data for group %p\n",
+		pr_err("Failed to get domain data for group %pK\n",
 				group);
 		err = -1;
 		goto register_bail;
 	}
 	me->domain_id = msm_find_domain_no(domain);
 	if (me->domain_id < 0) {
-		pr_err("Failed to get domain index for domain %p\n",
+		pr_err("Failed to get domain index for domain %pK\n",
 				domain);
 		err = -1;
 		goto register_bail;
 	}
-	pr_debug("domain=%p, domain_id=%d, group=%p\n", domain,
+	pr_debug("domain=%pK, domain_id=%d, group=%pK\n", domain,
 			me->domain_id, group);
 	err = platform_driver_register(&adsp_memory_driver);
 	if (err) {

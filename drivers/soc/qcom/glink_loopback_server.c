@@ -745,7 +745,7 @@ void glink_lpbsrv_notify_rx(void *handle, const void *priv,
 	struct ch_info *rx_ch_info = (struct ch_info *)priv;
 
 	LBSRV_INFO_PERF(
-		"%s:%s:%s %s: end (Success) RX priv[%p] data[%p] size[%zu]\n",
+		"%s:%s:%s %s: end (Success) RX priv[%pK] data[%pK] size[%zu]\n",
 		rx_ch_info->transport, rx_ch_info->edge, rx_ch_info->name,
 		__func__, pkt_priv, (char *)ptr, size);
 	tmp_work_info = kzalloc(sizeof(struct rx_work_info), GFP_KERNEL);
@@ -773,7 +773,7 @@ void glink_lpbsrv_notify_rxv(void *handle, const void *priv,
 	struct rx_work_info *tmp_work_info;
 	struct ch_info *rx_ch_info = (struct ch_info *)priv;
 
-	LBSRV_INFO("%s:%s:%s %s: priv[%p] data[%p] size[%zu]\n",
+	LBSRV_INFO("%s:%s:%s %s: priv[%pK] data[%pK] size[%zu]\n",
 		   rx_ch_info->transport, rx_ch_info->edge, rx_ch_info->name,
 		   __func__, pkt_priv, (char *)ptr, size);
 	tmp_work_info = kzalloc(sizeof(struct rx_work_info), GFP_KERNEL);
@@ -802,7 +802,7 @@ void glink_lpbsrv_notify_rx_tp(void *handle, const void *priv,
 	struct ch_info *rx_ch_info = (struct ch_info *)priv;
 
 	LBSRV_INFO_PERF(
-		"%s:%s:%s %s: end (Success) RX priv[%p] data[%p] size[%zu]\n",
+		"%s:%s:%s %s: end (Success) RX priv[%pK] data[%pK] size[%zu]\n",
 		rx_ch_info->transport, rx_ch_info->edge, rx_ch_info->name,
 		__func__, pkt_priv, (char *)ptr, size);
 	tracer_pkt_log_event((void *)ptr, LOOPBACK_SRV_RX);
@@ -828,7 +828,7 @@ void glink_lpbsrv_notify_tx_done(void *handle, const void *priv,
 				 const void *pkt_priv, const void *ptr)
 {
 	struct ch_info *tx_done_ch_info = (struct ch_info *)priv;
-	LBSRV_INFO_PERF("%s:%s:%s %s: end (Success) TX_DONE ptr[%p]\n",
+	LBSRV_INFO_PERF("%s:%s:%s %s: end (Success) TX_DONE ptr[%pK]\n",
 			tx_done_ch_info->transport, tx_done_ch_info->edge,
 			tx_done_ch_info->name, __func__, ptr);
 
@@ -1147,7 +1147,7 @@ static void glink_lbsrv_tx_worker(struct work_struct *work)
 	uint32_t delay_ms;
 	uint32_t flags;
 
-	LBSRV_INFO_PERF("%s:%s:%s %s: start TX data[%p] size[%zu]\n",
+	LBSRV_INFO_PERF("%s:%s:%s %s: start TX data[%pK] size[%zu]\n",
 		   tmp_ch_info->transport, tmp_ch_info->edge, tmp_ch_info->name,
 		   __func__, tmp_work_info->data, tmp_work_info->size);
 	while (1) {

@@ -2902,7 +2902,7 @@ static struct mmc_cmdq_req *mmc_blk_cmdq_rw_prep(
 	mqrq->cmdq_req.mrq.data = &mqrq->cmdq_req.data;
 	mqrq->req->special = mqrq;
 
-	pr_debug("%s: %s: mrq: 0x%p req: 0x%p mqrq: 0x%p bytes to xf: %d mmc_cmdq_req: 0x%p card-addr: 0x%08x dir(r-1/w-0): %d\n",
+	pr_debug("%s: %s: mrq: 0x%pK req: 0x%pK mqrq: 0x%pK bytes to xf: %d mmc_cmdq_req: 0x%pK card-addr: 0x%08x dir(r-1/w-0): %d\n",
 		 mmc_hostname(card->host), __func__, &mqrq->cmdq_req.mrq,
 		 mqrq->req, mqrq, (cmdq_rq->data.blocks * cmdq_rq->data.blksz),
 		 cmdq_rq, cmdq_rq->blk_addr,

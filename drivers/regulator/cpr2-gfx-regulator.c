@@ -1738,7 +1738,7 @@ static int cpr_efuse_init(struct platform_device *pdev,
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "efuse_addr");
 	if (!res || !res->start) {
-		cpr_err(cpr_vreg, "efuse_addr missing: res=%p\n", res);
+		cpr_err(cpr_vreg, "efuse_addr missing: res=%pK\n", res);
 		return -EINVAL;
 	}
 
@@ -2820,12 +2820,12 @@ static int cpr_init_cpr(struct platform_device *pdev,
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "rbcpr");
 	if (!res || !res->start) {
-		cpr_err(cpr_vreg, "missing rbcpr address: res=%p\n", res);
+		cpr_err(cpr_vreg, "missing rbcpr address: res=%pK\n", res);
 		return -EINVAL;
 	}
 	cpr_vreg->rbcpr_base = devm_ioremap(&pdev->dev, res->start, GFP_KERNEL);
 	if (!cpr_vreg->rbcpr_base) {
-		cpr_err(cpr_vreg, "ioremap rbcpr address=%p failed\n", res);
+		cpr_err(cpr_vreg, "ioremap rbcpr address=%pK failed\n", res);
 		return -ENXIO;
 	}
 

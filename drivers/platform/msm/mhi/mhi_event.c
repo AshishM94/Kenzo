@@ -119,7 +119,7 @@ int create_ev_rings(struct mhi_device_ctxt *mhi_dev_ctxt)
 		r = -ENOMEM;
 		goto free_msi_counter;
 	}
-	mhi_log(MHI_MSG_INFO, "Allocated ECABAP at Virt: 0x%p, Phys 0x%lx\n",
+	mhi_log(MHI_MSG_INFO, "Allocated ECABAP at Virt: 0x%pK, Phys 0x%lx\n",
 			mhi_dev_ctxt->mhi_ctrl_seg->mhi_ec_list,
 			(uintptr_t)mhi_dev_ctxt->mmio_info.dma_ev_ctxt);
 
@@ -286,7 +286,7 @@ enum MHI_STATUS mhi_init_local_event_ring(struct mhi_device_ctxt *mhi_dev_ctxt,
 
 	spin_lock_irqsave(lock, flags);
 
-	mhi_log(MHI_MSG_INFO, "mmio_addr = 0x%p, mmio_len = 0x%llx\n",
+	mhi_log(MHI_MSG_INFO, "mmio_addr = 0x%pK, mmio_len = 0x%llx\n",
 			mhi_dev_ctxt->mmio_info.mmio_addr,
 			mhi_dev_ctxt->mmio_info.mmio_len);
 	mhi_log(MHI_MSG_INFO, "Initializing event ring %d\n", ring_index);

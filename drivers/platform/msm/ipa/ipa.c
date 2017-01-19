@@ -342,7 +342,7 @@ static void ipa_wan_msg_free_cb(void *buff, u32 len, u32 type)
 	if (type != WAN_UPSTREAM_ROUTE_ADD &&
 	    type != WAN_UPSTREAM_ROUTE_DEL &&
 	    type != WAN_EMBMS_CONNECT) {
-		IPAERR("Wrong type given. buff %p type %d\n", buff, type);
+		IPAERR("Wrong type given. buff %pK type %d\n", buff, type);
 	}
 	kfree(buff);
 }
@@ -4144,7 +4144,7 @@ static int ipa_smmu_wlan_cb_probe(struct device *dev)
 	int atomic_ctx = 1;
 	int ret;
 
-	IPADBG("sub pdev=%p\n", dev);
+	IPADBG("sub pdev=%pK\n", dev);
 
 	cb->dev = dev;
 	cb->iommu = iommu_domain_alloc(&platform_bus_type);
@@ -4199,7 +4199,7 @@ static int ipa_smmu_uc_cb_probe(struct device *dev)
 	int disable_htw = 1;
 	int ret;
 
-	IPADBG("sub pdev=%p\n", dev);
+	IPADBG("sub pdev=%pK\n", dev);
 
 	if (dma_set_mask(dev, DMA_BIT_MASK(32)) ||
 		    dma_set_coherent_mask(dev, DMA_BIT_MASK(32))) {
@@ -4246,7 +4246,7 @@ static int ipa_smmu_ap_cb_probe(struct device *dev)
 	int result;
 	int disable_htw = 1;
 
-	IPADBG("sub pdev=%p\n", dev);
+	IPADBG("sub pdev=%pK\n", dev);
 
 	if (dma_set_mask(dev, DMA_BIT_MASK(32)) ||
 		    dma_set_coherent_mask(dev, DMA_BIT_MASK(32))) {

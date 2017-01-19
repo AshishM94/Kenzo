@@ -417,7 +417,7 @@ static ssize_t mhi_uci_client_read(struct file *file, char __user *buf,
 					local_buf, buf_size, &chained);
 
 			uci_log(UCI_DBG_VERBOSE,
-				"reading from mhi_core local_buf = %p,buf_size = 0x%x bytes_read = 0x%x\n",
+				"reading from mhi_core local_buf = %pK,buf_size = 0x%x bytes_read = 0x%x\n",
 				local_buf, buf_size, bytes_avail);
 
 			if (bytes_avail < 0) {
@@ -434,7 +434,7 @@ static ssize_t mhi_uci_client_read(struct file *file, char __user *buf,
 
 				*bytes_pending = (loff_t)uci_handle->pkt_size;
 				uci_log(UCI_DBG_VERBOSE,
-					"Got pkt of size 0x%x at addr %p, chan %d\n",
+					"Got pkt of size 0x%x at addr %pK, chan %d\n",
 					uci_handle->pkt_size, local_buf, chan);
 			} else {
 				uci_handle->pkt_loc = 0;
@@ -464,7 +464,7 @@ static ssize_t mhi_uci_client_read(struct file *file, char __user *buf,
 			/* A valid packet was returned from MHI */
 		} else if (bytes_avail > 0) {
 			uci_log(UCI_DBG_VERBOSE,
-				"Got packet: avail pkts %d phy_adr %p, chan %d\n",
+				"Got packet: avail pkts %d phy_adr %pK, chan %d\n",
 				atomic_read(&uci_handle->read_data_ready),
 				local_buf,
 				chan);
@@ -475,7 +475,7 @@ static ssize_t mhi_uci_client_read(struct file *file, char __user *buf,
 			 */
 		} else {
 			uci_log(UCI_DBG_CRITICAL,
-				"chan %d err: avail pkts %d phy_adr %p",
+				"chan %d err: avail pkts %d phy_adr %pK",
 				chan,
 				atomic_read(&uci_handle->read_data_ready),
 				local_buf);
@@ -512,7 +512,7 @@ static ssize_t mhi_uci_client_read(struct file *file, char __user *buf,
 	/* We finished with this buffer, map it back */
 	if (*bytes_pending == 0) {
 		uci_log(UCI_DBG_VERBOSE,
-				"All data consumed. Pkt loc %p ,chan %d\n",
+				"All data consumed. Pkt loc %pK ,chan %d\n",
 				uci_handle->pkt_loc, chan);
 		uci_handle->pkt_loc = 0;
 		uci_handle->pkt_size = 0;
@@ -554,7 +554,7 @@ static ssize_t mhi_uci_client_write(struct file *file,
 				(void *)buf, count, 1);
 		if (ret_val < 0) {
 			uci_log(UCI_DBG_ERROR,
-				"Error while writing data to MHI, chan %d, buf %p, size %d\n",
+				"Error while writing data to MHI, chan %d, buf %pK, size %d\n",
 				chan, (void *)buf, count);
 			ret_val = -EIO;
 			break;

@@ -98,7 +98,7 @@ int msm_iommu_map_extra(struct iommu_domain *domain,
 		map_ret = iommu_map_sg(domain, temp_iova, sglist, nrpages,
 					prot);
 		if (map_ret != size) {
-			pr_err("%s: could not map extra %lx in domain %p\n",
+			pr_err("%s: could not map extra %lx in domain %pK\n",
 				__func__, start_iova, domain);
 			ret = -EINVAL;
 		} else {
@@ -115,7 +115,7 @@ int msm_iommu_map_extra(struct iommu_domain *domain,
 			ret = iommu_map(domain, temp_iova, phy_addr, page_size,
 						prot);
 			if (ret) {
-				pr_err("%s: could not map %lx in domain %p, error: %d\n",
+				pr_err("%s: could not map %lx in domain %pK, error: %d\n",
 					__func__, start_iova, domain, ret);
 				ret = -EAGAIN;
 				goto out;
@@ -161,7 +161,7 @@ static int msm_iommu_map_iova_phys(struct iommu_domain *domain,
 
 	ret = iommu_map(domain, iova, phys, size, prot);
 	if (ret) {
-		pr_err("%s: could not map extra %lx in domain %p\n",
+		pr_err("%s: could not map extra %lx in domain %pK\n",
 			__func__, iova, domain);
 	}
 
@@ -891,7 +891,7 @@ static int iommu_domain_probe(struct platform_device *pdev)
 			continue;
 
 		if (iommu_attach_device(domain, ctx)) {
-			WARN(1, "%s: could not attach domain %p to context %s. iommu programming will not occur.\n",
+			WARN(1, "%s: could not attach domain %pK to context %s. iommu programming will not occur.\n",
 				__func__, domain, p->domain_names[i].name);
 			continue;
 		}

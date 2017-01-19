@@ -278,7 +278,7 @@ static enum MHI_STATUS mhi_init_inbound(struct uci_client *client_handle,
 			i, chan_attributes->nr_trbs);
 	for (i = 0; i < chan_attributes->nr_trbs; ++i) {
 		data_loc = kmalloc(buf_size, GFP_KERNEL);
-		uci_log(UCI_DBG_INFO, "Allocated buffer %p size %d\n",
+		uci_log(UCI_DBG_INFO, "Allocated buffer %pK size %d\n",
 		data_loc, buf_size);
 		if (data_loc == NULL)
 			return -ENOMEM;
@@ -829,7 +829,7 @@ static ssize_t mhi_uci_client_read(struct file *file, char __user *buf,
 	}
 	/* We finished with this buffer, map it back */
 	if (*bytes_pending == 0) {
-		uci_log(UCI_DBG_VERBOSE, "Pkt loc %p ,chan %d\n",
+		uci_log(UCI_DBG_VERBOSE, "Pkt loc %pK ,chan %d\n",
 					uci_handle->pkt_loc, chan);
 		memset(uci_handle->pkt_loc, 0, buf_size);
 		phy_buf = dma_map_single(NULL, uci_handle->pkt_loc,

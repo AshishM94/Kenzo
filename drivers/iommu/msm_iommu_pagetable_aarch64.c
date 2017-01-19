@@ -232,7 +232,7 @@ static inline s32 ll_4k_map(u64 *ll_pte, phys_addr_t pa,
 
 	if (*ll_pte) {
 		ret = -EBUSY;
-		pr_err("%s: Busy ll_pte %p -> %lx\n",
+		pr_err("%s: Busy ll_pte %pK -> %lx\n",
 			__func__, ll_pte, (unsigned long) *ll_pte);
 		goto fail;
 	}
@@ -251,7 +251,7 @@ static inline s32 ll_64k_map(u64 *ll_pte, phys_addr_t pa,
 	for (i = 0; i < 16; ++i) {
 		if (*(ll_pte+i)) {
 			ret = -EBUSY;
-			pr_err("%s: Busy ll_pte %p -> %lx\n",
+			pr_err("%s: Busy ll_pte %pK -> %lx\n",
 				__func__, ll_pte, (unsigned long) *ll_pte);
 			goto fail;
 		}
@@ -274,7 +274,7 @@ static inline s32 tl_2m_map(u64 *tl_pte, phys_addr_t pa,
 
 	if (*tl_pte) {
 		ret = -EBUSY;
-		pr_err("%s: Busy tl_pte %p -> %lx\n",
+		pr_err("%s: Busy tl_pte %pK -> %lx\n",
 			__func__, tl_pte, (unsigned long) *tl_pte);
 		goto fail;
 	}
@@ -294,7 +294,7 @@ static inline s32 tl_32m_map(u64 *tl_pte, phys_addr_t pa,
 	for (i = 0; i < 16; ++i) {
 		if (*(tl_pte+i)) {
 			ret = -EBUSY;
-			pr_err("%s: Busy tl_pte %p -> %lx\n",
+			pr_err("%s: Busy tl_pte %pK -> %lx\n",
 				__func__, tl_pte, (unsigned long) *tl_pte);
 			goto fail;
 		}
@@ -317,7 +317,7 @@ static inline s32 sl_1G_map(u64 *sl_pte, phys_addr_t pa,
 
 	if (*sl_pte) {
 		ret = -EBUSY;
-		pr_err("%s: Busy sl_pte %p -> %lx\n",
+		pr_err("%s: Busy sl_pte %pK -> %lx\n",
 			__func__, sl_pte, (unsigned long) *sl_pte);
 		goto fail;
 	}
@@ -631,7 +631,7 @@ static u64 clear_4th_level(u64 va, u64 *ll_pte, u64 len, u32 redirect,
 	for (offset = start_offset; offset < end_offset; offset++) {
 		if (*pte == 0) {
 			if (!silent)
-				pr_err("Last level PTE is 0 at 0x%p\n", pte);
+				pr_err("Last level PTE is 0 at 0x%pK\n", pte);
 			return 0;
 		}
 
@@ -656,7 +656,7 @@ static u64 clear_3rd_level(u64 va, u64 *tl_pte, u64 len, u32 redirect,
 
 	if (*tl_pte == 0) {
 		if (!silent)
-			pr_err("Third level PTE is 0 at 0x%p\n", tl_pte);
+			pr_err("Third level PTE is 0 at 0x%pK\n", tl_pte);
 		return 0;
 	}
 
@@ -682,7 +682,7 @@ static u64 clear_3rd_level(u64 va, u64 *tl_pte, u64 len, u32 redirect,
 			}
 		}
 	} else {
-		pr_err("Third level PTE is corrupted at 0x%p -> 0x%lx\n",
+		pr_err("Third level PTE is corrupted at 0x%pK -> 0x%lx\n",
 				tl_pte, (unsigned long)*tl_pte);
 	}
 
@@ -700,7 +700,7 @@ static u64 clear_2nd_level(u64 va, u64 *sl_pte, u64 len, u32 redirect,
 
 	if (*sl_pte == 0) {
 		if (!silent)
-			pr_err("Second level PTE is 0 at 0x%p\n", sl_pte);
+			pr_err("Second level PTE is 0 at 0x%pK\n", sl_pte);
 		return 0;
 	}
 
@@ -726,7 +726,7 @@ static u64 clear_2nd_level(u64 va, u64 *sl_pte, u64 len, u32 redirect,
 			}
 		}
 	} else {
-		pr_err("Second level PTE is corrupted at 0x%p -> 0x%lx\n",
+		pr_err("Second level PTE is corrupted at 0x%pK -> 0x%lx\n",
 				sl_pte, (unsigned long)*sl_pte);
 	}
 
@@ -744,7 +744,7 @@ static u64 clear_1st_level(u64 va, u64 *fl_pte, u64 len, u32 redirect,
 
 	if (*fl_pte == 0) {
 		if (!silent)
-			pr_err("First level PTE is 0 at 0x%p\n", fl_pte);
+			pr_err("First level PTE is 0 at 0x%pK\n", fl_pte);
 
 		return 0;
 	}
@@ -752,7 +752,7 @@ static u64 clear_1st_level(u64 va, u64 *fl_pte, u64 len, u32 redirect,
 	type = *fl_pte & FLSL_PTE_TYPE_MASK;
 	if (type == FLSL_TYPE_BLOCK) {
 		if (!silent)
-			pr_err("First level PTE has BLOCK mapping at 0x%p\n",
+			pr_err("First level PTE has BLOCK mapping at 0x%pK\n",
 				fl_pte);
 		return 0;
 	} else if (type == FLSL_TYPE_TABLE) {
@@ -770,7 +770,7 @@ static u64 clear_1st_level(u64 va, u64 *fl_pte, u64 len, u32 redirect,
 			}
 		}
 	} else {
-		pr_err("First level PTE is corrupted at 0x%p -> 0x%lx\n",
+		pr_err("First level PTE is corrupted at 0x%pK -> 0x%lx\n",
 				fl_pte, (unsigned long)*fl_pte);
 	}
 

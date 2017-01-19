@@ -69,7 +69,7 @@ static void print_error_description(struct kasan_access_info *info)
 		break;
 	}
 
-	pr_err("BUG: KASan: %s in %pS at addr %p\n",
+	pr_err("BUG: KASan: %s in %pS at addr %pK\n",
 		bug_type, (void *)info->ip,
 		info->access_addr);
 	pr_err("%s of size %zu by task %s/%d\n",
@@ -157,7 +157,7 @@ static void print_shadow_for_address(const void *addr)
 		char buffer[4 + (BITS_PER_LONG/8)*2];
 
 		snprintf(buffer, sizeof(buffer),
-			(i == 0) ? ">%p: " : " %p: ", kaddr);
+			(i == 0) ? ">%pK: " : " %pK: ", kaddr);
 
 		kasan_disable_current();
 		print_hex_dump(KERN_ERR, buffer,
@@ -198,7 +198,7 @@ void kasan_report_user_access(struct kasan_access_info *info)
 	spin_lock_irqsave(&report_lock, flags);
 	pr_err("================================="
 		"=================================\n");
-	pr_err("BUG: KASan: user-memory-access on address %p\n",
+	pr_err("BUG: KASan: user-memory-access on address %pK\n",
 		info->access_addr);
 	pr_err("%s of size %zu by task %s/%d\n",
 		info->is_write ? "Write" : "Read",

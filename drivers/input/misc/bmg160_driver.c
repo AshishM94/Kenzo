@@ -1707,7 +1707,7 @@ static int bmg_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	dev_notice(&client->dev, "sensor %s probed successfully", SENSOR_NAME);
 
 	dev_dbg(&client->dev,
-		"i2c_client: %p client_data: %p i2c_device: %p input: %p",
+		"i2c_client: %pK client_data: %pK i2c_device: %pK input: %pK",
 		client, client_data, &client->dev, client_data->input);
 
 	return 0;

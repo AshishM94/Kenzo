@@ -327,7 +327,7 @@ static void dbg_io(struct spmi_pmic_arb_dev *dev, const char *name,
 			void *virt, phys_addr_t phys, u32 offset, u32 val)
 {
 	dev_dbg(dev->dev,
-	    "%-10s phy-base:0x%lx phy:0x%lx virt:0x%p ofst:0x%03x val:0x%x\n",
+	    "%-10s phy-base:0x%lx phy:0x%lx virt:0x%pK ofst:0x%03x val:0x%x\n",
 	    name, (ulong) phys, (ulong) (phys + offset), (virt + offset),
 	    offset,  val);
 }
@@ -359,7 +359,7 @@ static void dbg_pic_io(struct spmi_pmic_arb_dev *dev, const char *name,
 			u8 sid, u16 pid, u8 apid, const char *desc)
 {
 	dev_dbg(dev->dev,
-	"%-10s phy-base:0x%lx phy:0x%lx virt:0x%p ofst:0x%03x val:0x%x sid:%d pid:0x%x apid:0x%x %s\n",
+	"%-10s phy-base:0x%lx phy:0x%lx virt:0x%pK ofst:0x%03x val:0x%x sid:%d pid:0x%x apid:0x%x %s\n",
 	name, (ulong) phys, (ulong) (phys + offset), (virt + offset), offset,
 	val, sid, pid, apid, desc ? desc : "");
 }
@@ -726,7 +726,7 @@ static void pmic_arb_log_mapping_v1(struct spmi_pmic_arb_dev *dev,
 	int apid;
 	int owner;
 
-	PRINT_IPC_OR_SEQ(dev, file, "Ownership-table@:0x%p",
+	PRINT_IPC_OR_SEQ(dev, file, "Ownership-table@:0x%pK",
 			 dev->cnfg + SPMI_OWNERSHIP_TABLE_REG(0));
 	PRINT_IPC_OR_SEQ(dev, file, "APID Owner reg-value");
 	PRINT_IPC_OR_SEQ(dev, file,
@@ -789,7 +789,7 @@ void pmic_arb_dbg_dump_radix_and_requested_irqs(struct spmi_pmic_arb_dev *dev,
 	int i;
 	u32 reg;
 
-	PRINT_IPC_OR_SEQ(dev, file, "Radix-tree@0x%p",
+	PRINT_IPC_OR_SEQ(dev, file, "Radix-tree@0x%pK",
 			 dev->cnfg + SPMI_MAPPING_TABLE_REG(0));
 	PRINT_IPC_OR_SEQ(dev, file,
 			 "------------------------------------------");
@@ -1249,7 +1249,7 @@ static int pmic_arb_devm_ioremap(struct platform_device *pdev,
 							resource_size(mem_res));
 
 	dev_dbg(&pdev->dev,
-		"%s ioremap(phy:0x%lx vir:0x%p len:0x%lx)\n", res_name,
+		"%s ioremap(phy:0x%lx vir:0x%pK len:0x%lx)\n", res_name,
 		(ulong) mem_res->start, *virt, (ulong) resource_size(mem_res));
 
 	if (!(*virt)) {

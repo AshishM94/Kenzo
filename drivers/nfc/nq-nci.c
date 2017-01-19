@@ -371,7 +371,7 @@ int nfc_ioctl_power_states(struct file *filp, unsigned long arg)
 		 */
 		nqx_disable_irq(nqx_dev);
 		dev_dbg(&nqx_dev->client->dev,
-			"gpio_set_value disable: %s: info: %p\n",
+			"gpio_set_value disable: %s: info: %pK\n",
 			__func__, nqx_dev);
 		if (gpio_is_valid(nqx_dev->firm_gpio))
 			gpio_set_value(nqx_dev->firm_gpio, 0);
@@ -393,7 +393,7 @@ int nfc_ioctl_power_states(struct file *filp, unsigned long arg)
 	} else if (arg == 1) {
 		nqx_enable_irq(nqx_dev);
 		dev_dbg(&nqx_dev->client->dev,
-			"gpio_set_value enable: %s: info: %p\n",
+			"gpio_set_value enable: %s: info: %pK\n",
 			__func__, nqx_dev);
 		if (gpio_is_valid(nqx_dev->firm_gpio))
 			gpio_set_value(nqx_dev->firm_gpio, 0);

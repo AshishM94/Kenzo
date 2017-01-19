@@ -133,7 +133,7 @@ static inline void send_unreach(struct sk_buff *skb_in, int code)
 	if (skb_in->sk) {
 		skb_in->sk->sk_err = icmp_err_convert[code].errno;
 		skb_in->sk->sk_error_report(skb_in->sk);
-		pr_debug("ipt_REJECT: sk_err=%d for skb=%p sk=%p\n",
+		pr_debug("ipt_REJECT: sk_err=%d for skb=%pK sk=%pK\n",
 			skb_in->sk->sk_err, skb_in, skb_in->sk);
 	}
 #endif
