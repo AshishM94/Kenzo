@@ -73,16 +73,16 @@ elif [ $SCHED = 6 ]; then
 replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"bfq\"";
 elif [ $SCHED = 7 ]; then
 replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"fiops\"";
-elif [ $SCHED = 8 ]; then
-replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"zen\"";
 elif [ $SCHED = 9 ]; then
 replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"sioplus\"";
 elif [ $SCHED = 10 ]; then
 replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"tripndroid\"";
 elif [ $SCHED = 11 ]; then
 replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"vr\"";
-else
+elif [ $SCHED = 12 ]; then
 replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"fifo\"";
+else
+replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"zen\"";
 fi;
 
 # end ramdisk changes
