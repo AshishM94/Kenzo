@@ -226,6 +226,16 @@ echo "write /proc/sys/vm/laptop_mode 1" >> $CONFIGFILE
 
 echo "" >> $CONFIGFILE
 
+echo "#disable touchboost" >> $CONFIGFILE
+echo "write /sys/module/msm_performance/parameters/touchboost 0" >> $CONFIGFILE
+
+echo "" >> $CONFIGFILE
+
+echo "#little-cluster input boost" >> $CONFIGFILE
+echo "write /sys/module/cpu_boost/parameters/input_boost_freq \"0:1190400 1:1190400 2:1190400 3:1190400 4:0 5:0"\" >> $CONFIGFILE
+
+echo "" >> $CONFIGFILE
+
 echo "#disable core control and enable msm thermal" >> $CONFIGFILE
 echo "write /sys/module/msm_thermal/core_control/enabled 0" >> $CONFIGFILE
 echo "write /sys/module/msm_thermal/parameters/enabled Y" >> $CONFIGFILE
