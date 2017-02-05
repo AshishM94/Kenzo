@@ -205,6 +205,9 @@ echo "write /sys/devices/platform/kcal_ctrl.0/kcal_sat 255" >> $CONFIGFILE
 fi
 misc=`grep selected.2 /tmp/aroma/misc.prop | cut -d '=' -f2`
 if [ $misc = 1 ]; then
+echo "write /sys/kernel/sound_control/headphone_pa_gain \"3 5"\" >> $CONFIGFILE
+echo "write /sys/kernel/sound_control/headphone_gain \"3 6"\" >> $CONFIGFILE
+elif [ $misc = 2 ]; then
 echo "write /sys/kernel/sound_control/headphone_pa_gain \"5 5"\" >> $CONFIGFILE
 else
 echo "write /sys/kernel/sound_control/headphone_gain \"6 6"\" >> $CONFIGFILE
