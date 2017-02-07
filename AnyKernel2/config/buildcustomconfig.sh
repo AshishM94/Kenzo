@@ -235,7 +235,7 @@ echo "write /sys/module/msm_performance/parameters/touchboost 0" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
 
 echo "#little-cluster input boost" >> $CONFIGFILE
-echo "write /sys/module/cpu_boost/parameters/input_boost_freq \"0:1190400 1:1190400 2:1190400 3:1190400 4:0 5:0"\" >> $CONFIGFILE
+echo "write /sys/module/cpu_boost/parameters/input_boost_freq \"0:0 1:0 2:0 3:1190400 4:0 5:0"\" >> $CONFIGFILE
 
 echo "" >> $CONFIGFILE
 
