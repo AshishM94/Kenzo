@@ -205,8 +205,8 @@ echo "write /sys/devices/platform/kcal_ctrl.0/kcal_sat 255" >> $CONFIGFILE
 fi
 misc=`grep selected.2 /tmp/aroma/misc.prop | cut -d '=' -f2`
 if [ $misc = 1 ]; then
-echo "write /sys/kernel/sound_control/headphone_pa_gain \"5 5"\" >> $CONFIGFILE
-echo "write /sys/kernel/sound_control/headphone_gain \"253 253"\" >> $CONFIGFILE
+echo "write /sys/kernel/sound_control/headphone_pa_gain \"3 5"\" >> $CONFIGFILE
+echo "write /sys/kernel/sound_control/headphone_gain \"3 6"\" >> $CONFIGFILE
 elif [ $misc = 2 ]; then
 echo "write /sys/kernel/sound_control/headphone_pa_gain \"5 5"\" >> $CONFIGFILE
 else
@@ -236,7 +236,6 @@ echo "" >> $CONFIGFILE
 
 echo "#little-cluster input boost" >> $CONFIGFILE
 echo "write /sys/module/cpu_boost/parameters/input_boost_freq \"0:1190400 1:1190400 2:1190400 3:1190400 4:0 5:0"\" >> $CONFIGFILE
-echo "write /sys/module/cpu_boost/parameters/input_boost_ms 200" >> $CONFIGFILE
 
 echo "" >> $CONFIGFILE
 

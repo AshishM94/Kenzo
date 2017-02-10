@@ -94,7 +94,6 @@ echo "" >> $CONFIGFILE
 
 echo "#little-cluster input boost" >> $CONFIGFILE
 echo "write /sys/module/cpu_boost/parameters/input_boost_freq \"0:1190400 1:1190400 2:1190400 3:1190400 4:0 5:0"\" >> $CONFIGFILE
-echo "write /sys/module/cpu_boost/parameters/input_boost_ms 200" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
 
 echo "#disable core control and enable msm thermal" >> $CONFIGFILE
