@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 3.10.104 Kernel Configuration
+# Linux/arm64 3.10.105 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -1943,6 +1943,7 @@ CONFIG_SPI_SPIDEV=y
 CONFIG_SPMI=y
 CONFIG_SPMI_MSM_PMIC_ARB=y
 CONFIG_MSM_QPNP_INT=y
+# CONFIG_MSM_SPMI_DEBUGFS_RO is not set
 
 #
 # Qualcomm MSM SSBI bus support
