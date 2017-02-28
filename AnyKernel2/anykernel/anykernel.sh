@@ -5,9 +5,9 @@
 # EDIFY properties
 kernel.string=Zetsubou by Ashish94 @ xda-developers
 do.devicecheck=1
-do.initd=1
 do.modules=0
 do.cleanup=1
+do.cleanuponabort=0
 device.name1=kenzo
 device.name2=Redmi Note 3
 device.name3=
