@@ -60,10 +60,21 @@ menubox(
   "menu.prop",
   "Install","one-tap setup with recommended settings ","@install",
   "Customize installation","select your custom settings","@custom",
+  "Changelog","view the complete changelog of this release","@changelog",
   "Exit","exit to recovery","@trash"
 );
 
 if prop("menu.prop", "selected")=="3" then
+textbox(
+   "\nChangelog",
+   "<@center><b>\nChangelog up to current version</b>\n\n</@>",
+   "",
+   resread("changelog.txt")
+);
+back("2");
+endif;
+
+if prop("menu.prop", "selected")=="4" then
   if
     confirm(
       "Exit",

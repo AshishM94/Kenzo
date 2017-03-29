@@ -38,6 +38,7 @@ modules.builtin
 *.sha1
 dtb
 zImage
+changelog.txt
 
 #
 # Top-level generic files
