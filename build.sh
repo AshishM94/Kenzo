@@ -15,9 +15,7 @@
  # Please maintain this if you use this script or any part of it
  #
 KERNEL_DIR=$PWD
-ZIP_DIR=$KERNEL_DIR/AnyKernel2
 KERN_IMG=$KERNEL_DIR/arch/arm64/boot/Image
-DT_IMG=$KERNEL_DIR/arch/arm64/boot/dt.img
 DTBTOOL=$KERNEL_DIR/tools/dtbToolCM
 BUILD_START=$(date +"%s")
 blue='\033[0;34m'
@@ -63,15 +61,6 @@ $DTBTOOL -2 -o $KERNEL_DIR/arch/arm64/boot/dt.img -s 2048 -p $KERNEL_DIR/scripts
 compile_kernel
 ;;
 esac
-echo -e "$blue***********************************************"
-echo "          creating flashable zip          "
-echo -e "***********************************************$nocol"
-cd $ZIP_DIR
-make clean
-cp $DT_IMG $ZIP_DIR/anykernel/dtb
-cp $KERN_IMG $ZIP_DIR/anykernel/zImage
-make
-make sign
 BUILD_END=$(date +"%s")
 DIFF=$(($BUILD_END - $BUILD_START))
 echo -e "$yellow Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nocol"
