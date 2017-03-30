@@ -1020,7 +1020,7 @@ static int gs_put_char(struct tty_struct *tty, unsigned char ch)
 
 	if (!port)
 		return 0;
-	pr_vdebug("gs_put_char: (%d,%pK) char=0x%x, called from %pf\n",
+	pr_vdebug("gs_put_char: (%d,%pK) char=0x%x, called from %pKf\n",
 		port->port_num, tty, ch, __builtin_return_address(0));
 
 	spin_lock_irqsave(&port->port_lock, flags);

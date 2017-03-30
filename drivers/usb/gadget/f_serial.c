@@ -656,6 +656,7 @@ static void gser_disable(struct usb_function *f)
 #endif
 	gser->online = 0;
 }
+
 #ifdef CONFIG_MODEM_SUPPORT
 static int gser_notify(struct f_gser *gser, u8 type, u16 value,
 		void *data, unsigned length)

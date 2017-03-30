@@ -692,7 +692,7 @@ static int dwc3_ep_req_list_show(struct seq_file *s, void *unused)
 		req = list_entry(ptr, struct dwc3_request, list);
 
 		seq_printf(s,
-			"req:0x%pK len: %d sts: %d dma:0x%pa num_sgs: %d\n",
+			"req:0x%pK len: %d sts: %d dma:0x%pKa num_sgs: %d\n",
 			req, req->request.length, req->request.status,
 			&req->request.dma, req->request.num_sgs);
 	}
@@ -731,7 +731,7 @@ static int dwc3_ep_queued_req_show(struct seq_file *s, void *unused)
 		req = list_entry(ptr, struct dwc3_request, list);
 
 		seq_printf(s,
-			"req:0x%pK len:%d sts:%d dma:%pa nsg:%d trb:0x%pK\n",
+			"req:0x%pK len:%d sts:%d dma:%pKa nsg:%d trb:0x%pK\n",
 			req, req->request.length, req->request.status,
 			&req->request.dma, req->request.num_sgs, req->trb);
 	}
