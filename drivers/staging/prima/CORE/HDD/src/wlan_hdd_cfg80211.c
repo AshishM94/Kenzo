@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2017 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -3764,10 +3764,20 @@ static int __wlan_hdd_cfg80211_extscan_set_bssid_hotlist(struct wiphy *wiphy,
 
     pReqMsg->numBssid = nla_get_u32(
               tb[QCA_WLAN_VENDOR_ATTR_EXTSCAN_BSSID_HOTLIST_PARAMS_NUM_AP]);
+    if (pReqMsg->numBssid > WLAN_EXTSCAN_MAX_HOTLIST_APS) {
+        hddLog(LOGE, FL("Number of AP: %u exceeds max: %u"),
+               pReqMsg->numBssid, WLAN_EXTSCAN_MAX_HOTLIST_APS);
+        goto fail;
+    }
     hddLog(VOS_TRACE_LEVEL_INFO, FL("Number of AP (%d)"), pReqMsg->numBssid);
 
     nla_for_each_nested(apTh,
                 tb[QCA_WLAN_VENDOR_ATTR_EXTSCAN_AP_THRESHOLD_PARAM], rem) {
+        if (i == pReqMsg->numBssid) {
+            hddLog(LOGW, FL("Ignoring excess AP"));
+            break;
+        }
+
         if(nla_parse(tb2, QCA_WLAN_VENDOR_ATTR_EXTSCAN_SUBCMD_CONFIG_PARAM_MAX,
                 nla_data(apTh), nla_len(apTh),
                 NULL)) {
@@ -3804,6 +3814,12 @@ static int __wlan_hdd_cfg80211_extscan_set_bssid_hotlist(struct wiphy *wiphy,
         hddLog(VOS_TRACE_LEVEL_INFO, FL("RSSI High (%d)"),
                                          pReqMsg->ap[i].high);
         i++;
+    }
+
+    if (i < pReqMsg->numBssid) {
+        hddLog(LOGW, FL("Number of AP %u less than expected %u"),
+               i, pReqMsg->numBssid);
+        pReqMsg->numBssid = i;
     }
 
     context = &pHddCtx->ext_scan_context;
@@ -8474,10 +8490,14 @@ int wlan_hdd_cfg80211_alloc_new_beacon(hdd_adapter_t *pAdapter,
     beacon->proberesp_ies_len = proberesp_ies_len;
     beacon->assocresp_ies_len= assocresp_ies_len;
 
-    memcpy(beacon->head, head, head_len);
-    memcpy(beacon->tail, tail, tail_len);
-    memcpy(beacon->proberesp_ies, proberesp_ies, proberesp_ies_len);
-    memcpy(beacon->assocresp_ies, assocresp_ies, assocresp_ies_len);
+    if (head && head_len)
+        memcpy(beacon->head, head, head_len);
+    if (tail && tail_len)
+        memcpy(beacon->tail, tail, tail_len);
+    if (proberesp_ies && proberesp_ies_len)
+        memcpy(beacon->proberesp_ies, proberesp_ies, proberesp_ies_len);
+    if (assocresp_ies && assocresp_ies_len)
+        memcpy(beacon->assocresp_ies, assocresp_ies, assocresp_ies_len);
 
     *ppBeacon = beacon;
 
@@ -10562,7 +10582,7 @@ int __wlan_hdd_cfg80211_change_iface( struct wiphy *wiphy,
                          return -EINVAL;
                     }
                 }
-                status = hdd_init_ap_mode(pAdapter);
+                status = hdd_init_ap_mode(pAdapter, false);
                 if(status != VOS_STATUS_SUCCESS)
                 {
                     hddLog(VOS_TRACE_LEVEL_FATAL,
@@ -12163,15 +12183,9 @@ struct cfg80211_bss* wlan_hdd_cfg80211_update_bss_list(
     struct wiphy *wiphy = wdev->wiphy;
     struct cfg80211_bss *bss = NULL;
 
-    bss = cfg80211_get_bss(wiphy, NULL, bssid,
-                           NULL,
-                           0,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0)) && !defined(WITH_BACKPORTS) \
-     && !defined(IEEE80211_PRIVACY)
-                           WLAN_CAPABILITY_ESS, WLAN_CAPABILITY_ESS);
-#else
-                           IEEE80211_BSS_TYPE_ESS, IEEE80211_PRIVACY_ANY);
-#endif
+    bss = hdd_get_bss_entry(wiphy,
+          NULL, bssid,
+          NULL, 0);
     if (bss == NULL) {
         hddLog(LOGE, FL("BSS not present"));
     } else {
@@ -13668,7 +13682,6 @@ int wlan_hdd_cfg80211_connect_start( hdd_adapter_t  *pAdapter,
     v_U32_t roamId;
     tCsrRoamProfile *pRoamProfile;
     eCsrAuthType RSNAuthType;
-    const u8 *pValidBssid = NULL;
 
     ENTER();
 
@@ -13716,30 +13729,38 @@ int wlan_hdd_cfg80211_connect_start( hdd_adapter_t  *pAdapter,
         vos_mem_copy((void *)(pRoamProfile->SSIDs.SSIDList->SSID.ssId),
                 ssid, ssid_len);
 
+        vos_mem_zero(pRoamProfile->BSSIDs.bssid, WNI_CFG_BSSID_LEN);
+        vos_mem_zero(pRoamProfile->bssid_hint, WNI_CFG_BSSID_LEN);
+
         if (bssid)
         {
-            pValidBssid = bssid;
-        }
-        else if (bssid_hint)
-        {
-            pValidBssid = bssid_hint;
-        }
-        if (pValidBssid)
-        {
             pRoamProfile->BSSIDs.numOfBSSIDs = 1;
-            vos_mem_copy((void *)(pRoamProfile->BSSIDs.bssid), pValidBssid,
+            vos_mem_copy(pRoamProfile->BSSIDs.bssid, bssid,
                     WNI_CFG_BSSID_LEN);
             /* Save BSSID in seperate variable as well, as RoamProfile
                BSSID is getting zeroed out in the association process. And in
                case of join failure we should send valid BSSID to supplicant
              */
-            vos_mem_copy((void *)(pWextState->req_bssId), pValidBssid,
+            vos_mem_copy(pWextState->req_bssId, bssid,
                     WNI_CFG_BSSID_LEN);
+
         }
-        else
+        else if (bssid_hint)
         {
-            vos_mem_zero((void *)(pRoamProfile->BSSIDs.bssid),WNI_CFG_BSSID_LEN);
+            /* Store bssid_hint to use in the scan filter. */
+            vos_mem_copy(pRoamProfile->bssid_hint, bssid_hint,
+                    WNI_CFG_BSSID_LEN);
+            /*
+             * Save BSSID in seperate variable as well, as RoamProfile
+             * BSSID is getting zeroed out in the association process. And in
+             * case of join failure we should send valid BSSID to supplicant
+             */
+            vos_mem_copy(pWextState->req_bssId, bssid_hint,
+                    WNI_CFG_BSSID_LEN);
+            hddLog(LOG1, FL(" bssid_hint: "MAC_ADDRESS_STR),
+                   MAC_ADDR_ARRAY(pRoamProfile->bssid_hint));
         }
+
 
         hddLog(LOG1, FL("Connect to SSID: %s opertating Channel: %u"),
                pRoamProfile->SSIDs.SSIDList->SSID.ssId, operatingChannel);
@@ -19253,6 +19274,12 @@ static int __wlan_hdd_cfg80211_testmode(struct wiphy *wiphy, void *data, int len
 
             buf = nla_data(tb[WLAN_HDD_TM_ATTR_DATA]);
             buf_len = nla_len(tb[WLAN_HDD_TM_ATTR_DATA]);
+
+            if (buf_len > sizeof(*hb_params)) {
+                hddLog(LOGE, FL("buf_len=%d exceeded hb_params size limit"),
+                       buf_len);
+                return -ERANGE;
+            }
 
             hb_params_temp =(tSirLPHBReq *)buf;
             if ((hb_params_temp->cmd == LPHB_SET_TCP_PARAMS_INDID) &&

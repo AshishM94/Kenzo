@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2017 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -9563,6 +9563,8 @@ eHalStatus csrRoamPrepareFilterFromProfile(tpAniSirGlobal pMac, tCsrRoamProfile 
             pScanFilter->MDID.mobilityDomain = pProfile->MDID.mobilityDomain;
         }
 #endif
+        vos_mem_copy(pScanFilter->bssid_hint,
+            pProfile->bssid_hint, VOS_MAC_ADDR_SIZE);
 
 #ifdef WLAN_FEATURE_11W
         // Management Frame Protection
@@ -13222,7 +13224,7 @@ static void csrPrepareJoinReassocReqBuffer( tpAniSirGlobal pMac,
     // corresponds to --- pMsg->spectrumMgtIndicator = ON;
     vos_mem_copy(pBuf, (tANI_U8 *)&fTmp, sizeof(tAniBool));
     pBuf += sizeof(tAniBool);
-    *pBuf++ = MIN_STA_PWR_CAP_DBM; // it is for pMsg->powerCap.minTxPower = 0;
+    *pBuf++ = MIN_TX_PWR_CAP; // it is for pMsg->powerCap.minTxPower = 0;
     found = csrSearchChannelListForTxPower(pMac, pBssDescription, &channelGroup);
     // This is required for 11k test VoWiFi Ent: Test 2.
     // We need the power capabilities for Assoc Req. 
@@ -13235,7 +13237,7 @@ static void csrPrepareJoinReassocReqBuffer( tpAniSirGlobal pMac,
     }
     else
     {
-        *pBuf++ = MAX_STA_PWR_CAP_DBM;
+        *pBuf++ = MAX_TX_PWR_CAP;
     }
     size = sizeof(pMac->roam.validChannelList);
     if(HAL_STATUS_SUCCESS(csrGetCfgValidChannels(pMac, (tANI_U8 *)pMac->roam.validChannelList, &size)))

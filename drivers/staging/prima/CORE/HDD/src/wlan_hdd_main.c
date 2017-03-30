@@ -3056,6 +3056,8 @@ static VOS_STATUS wlan_hdd_handle_fastreassoc(hdd_adapter_t *pAdapter,
 	hdd_station_ctx_t *pHddStaCtx = NULL;
 	hdd_context_t *pHddCtx = NULL;
 	int ret;
+	tCsrRoamModifyProfileFields mod_profile_fields;
+	uint32_t roam_id = 0;
 	pHddStaCtx = WLAN_HDD_GET_STATION_CTX_PTR(pAdapter);
 	pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
 
@@ -3076,8 +3078,12 @@ static VOS_STATUS wlan_hdd_handle_fastreassoc(hdd_adapter_t *pAdapter,
 	if (vos_mem_compare(targetApBssid,
 				pHddStaCtx->conn_info.bssId,
 				sizeof(tSirMacAddr))) {
+		sme_GetModifyProfileFields(pHddCtx->hHal, pAdapter->sessionId,
+						&mod_profile_fields);
+		sme_RoamReassoc(pHddCtx->hHal, pAdapter->sessionId, NULL,
+				mod_profile_fields, &roam_id, 1);
 		hddLog(LOG1, FL("Reassoc BSSID is same as currently associated AP bssid"));
-		return eHAL_STATUS_FAILURE;
+		return eHAL_STATUS_SUCCESS;
 	}
 
 	/* Check channel number is a valid channel number */
@@ -8679,7 +8685,7 @@ hdd_adapter_t* hdd_open_adapter( hdd_context_t *pHddCtx, tANI_U8 session_type,
          pAdapter->device_mode = session_type;
 
          hdd_initialize_adapter_common(pAdapter);
-         status = hdd_init_ap_mode(pAdapter);
+         status = hdd_init_ap_mode(pAdapter, false);
          if( VOS_STATUS_SUCCESS != status )
             goto err_free_netdev;
 
@@ -9431,7 +9437,18 @@ VOS_STATUS hdd_reset_all_adapters( hdd_context_t *pHddCtx )
       pAdapter = pAdapterNode->pAdapter;
       hddLog(VOS_TRACE_LEVEL_INFO, FL("Disabling queues"));
       netif_tx_disable(pAdapter->dev);
-      netif_carrier_off(pAdapter->dev);
+
+      if (pHddCtx->cfg_ini->sap_internal_restart &&
+              pAdapter->device_mode == WLAN_HDD_SOFTAP) {
+          hddLog(LOG1, FL("driver supports sap restart"));
+          vos_flush_work(&pHddCtx->sap_start_work);
+          hdd_sap_indicate_disconnect_for_sta(pAdapter);
+          hdd_cleanup_actionframe(pHddCtx, pAdapter);
+          hdd_softap_deinit_tx_rx(pAdapter, true);
+          hdd_sap_destroy_timers(pAdapter);
+      } else {
+          netif_carrier_off(pAdapter->dev);
+      }
 
       pAdapter->sessionCtx.station.hdd_ReassocScenario = VOS_FALSE;
 
@@ -9479,6 +9496,113 @@ VOS_STATUS hdd_reset_all_adapters( hdd_context_t *pHddCtx )
 
    return VOS_STATUS_SUCCESS;
 }
+
+/**
+ * hdd_get_bss_entry() - Get the bss entry matching the chan, bssid and ssid
+ * @wiphy: wiphy
+ * @channel: channel of the BSS to find
+ * @bssid: bssid of the BSS to find
+ * @ssid: ssid of the BSS to find
+ * @ssid_len: ssid len of of the BSS to find
+ *
+ * The API is a wrapper to get bss from kernel matching the chan,
+ * bssid and ssid
+ *
+ * Return: Void
+ */
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0)) \
+    && !defined(WITH_BACKPORTS) && !defined(IEEE80211_PRIVACY)
+
+struct cfg80211_bss* hdd_get_bss_entry(struct wiphy *wiphy,
+      struct ieee80211_channel *channel,
+      const u8 *bssid,
+      const u8 *ssid, size_t ssid_len)
+{
+   return cfg80211_get_bss(wiphy, channel, bssid,
+           ssid, ssid_len,
+           WLAN_CAPABILITY_ESS,
+           WLAN_CAPABILITY_ESS);
+}
+#else
+struct cfg80211_bss* hdd_get_bss_entry(struct wiphy *wiphy,
+      struct ieee80211_channel *channel,
+      const u8 *bssid,
+      const u8 *ssid, size_t ssid_len)
+{
+   return cfg80211_get_bss(wiphy, channel, bssid,
+           ssid, ssid_len,
+           IEEE80211_BSS_TYPE_ESS,
+           IEEE80211_PRIVACY_ANY);
+}
+#endif
+
+/**
+ * hdd_connect_result() - API to send connection status to supplicant
+ * @dev: network device
+ * @bssid: bssid to which we want to associate
+ * @roam_info: information about connected bss
+ * @req_ie: Request Information Element
+ * @req_ie_len: len of the req IE
+ * @resp_ie: Response IE
+ * @resp_ie_len: len of ht response IE
+ * @status: status
+ * @gfp: Kernel Flag
+ *
+ * The API is a wrapper to send connection status to supplicant
+ *
+ * Return: Void
+ */
+#if defined CFG80211_CONNECT_BSS
+void hdd_connect_result(struct net_device *dev,
+    const u8 *bssid,
+    tCsrRoamInfo *roam_info,
+    const u8 *req_ie,
+    size_t req_ie_len,
+    const u8 *resp_ie,
+    size_t resp_ie_len,
+    u16 status,
+    gfp_t gfp)
+{
+   hdd_adapter_t *padapter = (hdd_adapter_t *) netdev_priv(dev);
+   struct cfg80211_bss *bss = NULL;
+
+   if (WLAN_STATUS_SUCCESS == status) {
+       struct ieee80211_channel *chan;
+       int freq;
+       int chan_no = roam_info->pBssDesc->channelId;;
+
+       if (chan_no <= 14)
+           freq = ieee80211_channel_to_frequency(chan_no,
+                  IEEE80211_BAND_2GHZ);
+       else
+           freq = ieee80211_channel_to_frequency(chan_no,
+                  IEEE80211_BAND_5GHZ);
+
+       chan = ieee80211_get_channel(padapter->wdev.wiphy, freq);
+       bss = hdd_get_bss_entry(padapter->wdev.wiphy,
+              chan, bssid,
+              roam_info->u.pConnectedProfile->SSID.ssId,
+              roam_info->u.pConnectedProfile->SSID.length);
+   }
+
+   cfg80211_connect_bss(dev, bssid, bss, req_ie, req_ie_len,
+        resp_ie, resp_ie_len, status, gfp);
+}
+#else
+void hdd_connect_result(struct net_device *dev,
+   const u8 *bssid,
+   tCsrRoamInfo *roam_info,
+   const u8 *req_ie,
+   size_t req_ie_len,
+   const u8 * resp_ie,
+   size_t resp_ie_len,
+   u16 status,
+   gfp_t gfp)
+{
+   cfg80211_connect_result(dev, bssid, req_ie, req_ie_len,
+         resp_ie, resp_ie_len, status, gfp);
+}
+#endif
 
 VOS_STATUS hdd_start_all_adapters( hdd_context_t *pHddCtx )
 {
@@ -9536,7 +9660,7 @@ VOS_STATUS hdd_start_all_adapters( hdd_context_t *pHddCtx )
                * Indicate connect failure to supplicant if we were in the
                * process of connecting
                */
-               cfg80211_connect_result(pAdapter->dev, NULL,
+               hdd_connect_result(pAdapter->dev, NULL, NULL,
                                        NULL, 0, NULL, 0,
                                        WLAN_STATUS_ASSOC_DENIED_UNSPEC,
                                        GFP_KERNEL);
@@ -9544,7 +9668,15 @@ VOS_STATUS hdd_start_all_adapters( hdd_context_t *pHddCtx )
             break;
 
          case WLAN_HDD_SOFTAP:
-            /* softAP can handle SSR */
+            if (pHddCtx->cfg_ini->sap_internal_restart) {
+                hdd_init_ap_mode(pAdapter, true);
+                status = hdd_sta_id_hash_attach(pAdapter);
+                if (VOS_STATUS_SUCCESS != status)
+                {
+                    hddLog(VOS_TRACE_LEVEL_FATAL,
+                         FL("failed to attach hash for"));
+                }
+            }
             break;
 
          case WLAN_HDD_P2P_GO:
@@ -14711,6 +14843,69 @@ void hdd_initialize_adapter_common(hdd_adapter_t *pAdapter)
         return;
 }
 
+
+/**
+ * wlan_hdd_start_sap() - This function starts bss of SAP.
+ * @ap_adapter: SAP adapter
+ *
+ * This function will process the starting of sap adapter.
+ *
+ * Return: void.
+ */
+void wlan_hdd_start_sap(hdd_adapter_t *ap_adapter)
+{
+	hdd_ap_ctx_t *hdd_ap_ctx;
+	hdd_hostapd_state_t *hostapd_state;
+	VOS_STATUS vos_status;
+	hdd_context_t *hdd_ctx;
+	tsap_Config_t *pConfig;
+
+	if (NULL == ap_adapter) {
+		VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+		FL("ap_adapter is NULL here"));
+		return;
+	}
+
+	hdd_ctx = WLAN_HDD_GET_CTX(ap_adapter);
+	hdd_ap_ctx = WLAN_HDD_GET_AP_CTX_PTR(ap_adapter);
+	hostapd_state = WLAN_HDD_GET_HOSTAP_STATE_PTR(ap_adapter);
+	pConfig = &ap_adapter->sessionCtx.ap.sapConfig;
+
+	mutex_lock(&hdd_ctx->sap_lock);
+	if (test_bit(SOFTAP_BSS_STARTED, &ap_adapter->event_flags))
+		goto end;
+
+	if (0 != wlan_hdd_cfg80211_update_apies(ap_adapter)) {
+		hddLog(LOGE, FL("SAP Not able to set AP IEs"));
+		goto end;
+	}
+
+	vos_event_reset(&hostapd_state->vosEvent);
+	if (WLANSAP_StartBss(hdd_ctx->pvosContext, hdd_hostapd_SAPEventCB,
+			&hdd_ap_ctx->sapConfig, (v_PVOID_t)ap_adapter->dev)
+			!= VOS_STATUS_SUCCESS) {
+		goto end;
+	}
+
+	VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO_HIGH,
+		FL("Waiting for SAP to start"));
+	vos_status = vos_wait_single_event(&hostapd_state->vosEvent, 10000);
+	if (!VOS_IS_STATUS_SUCCESS(vos_status)) {
+		VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
+			FL("SAP Start failed"));
+		goto end;
+	}
+	VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_INFO_HIGH,
+		FL("SAP Start Success"));
+	set_bit(SOFTAP_BSS_STARTED, &ap_adapter->event_flags);
+
+	wlan_hdd_incr_active_session(hdd_ctx, ap_adapter->device_mode);
+	hostapd_state->bCommit = TRUE;
+
+end:
+	mutex_unlock(&hdd_ctx->sap_lock);
+	return;
+}
 
 //Register the module init/exit functions
 module_init(hdd_module_init);

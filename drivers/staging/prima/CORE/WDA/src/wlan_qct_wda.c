@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2017 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -90,7 +90,9 @@
 /* Recover with ssr if tx timeouts continuously
  * for threshold number of times.
  */
-#define WDA_TX_FAILURE_RECOVERY_THRESHOLD 3
+#define WDA_TX_FAILURE_RECOVERY_THRESHOLD 5
+/* BTQM flush FW dump command */
+#define WDA_TX_FW_RECOVERY_THRESHOLD 3
 
 #define  IS_WDI_STATUS_FAILURE(status) \
    ((WDI_STATUS_SUCCESS != (status)) && (WDI_STATUS_PENDING != (status)))
@@ -11265,6 +11267,7 @@ VOS_STATUS WDA_SetBeaconFilterReq(tWDA_CbContext *pWDA,
       vos_mem_free(wdiBeaconFilterInfo);
       return VOS_STATUS_E_NOMEM;
    }
+   vos_mem_zero(wdiBeaconFilterInfo, sizeof(WDI_BeaconFilterReqParamsType));
    wdiBeaconFilterInfo->wdiBeaconFilterInfo.usBeaconInterval = 
       pBeaconFilterInfo->beaconInterval;
    wdiBeaconFilterInfo->wdiBeaconFilterInfo.usCapabilityInfo = 
@@ -14414,12 +14417,23 @@ VOS_STATUS WDA_TxPacket(tWDA_CbContext *pWDA,
       }
       pWDA->mgmtTxfailureCnt++;
 
+      /* Request firmware recovery */
+      if (WDA_TX_FW_RECOVERY_THRESHOLD ==
+                                pWDA->mgmtTxfailureCnt)
+      {
+         VOS_TRACE(VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
+                   "%s: Request firmware for recovery", __func__);
+         WLANTL_TLDebugMessage(WLANTL_DEBUG_FW_CLEANUP);
+      }
+
       /* SSR if timeout continously for
        * WDA_TX_FAILURE_RECOVERY_THRESHOLD times.
        */
       if (WDA_TX_FAILURE_RECOVERY_THRESHOLD ==
                                 pWDA->mgmtTxfailureCnt)
       {
+         VOS_TRACE(VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
+                   "%s: Request system recovery", __func__);
          vos_wlanRestart();
       }
       status = VOS_STATUS_E_FAILURE;
@@ -19384,6 +19398,8 @@ void WDA_ReceiveFilterClearFilterRespCallback(
                         void * pUserData)
 {
    tWDA_ReqParams *pWdaParams = (tWDA_ReqParams *)pUserData;
+   tSirRcvFltPktClearParam *pktClearParam;
+
    VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_INFO,
                                           "<------ %s " ,__func__);
 /*   WDA_VOS_ASSERT(NULL != pWdaParams); */
@@ -19394,7 +19410,14 @@ void WDA_ReceiveFilterClearFilterRespCallback(
       VOS_ASSERT(0) ;
       return ;
    }
-   
+
+   pktClearParam = (tSirRcvFltPktClearParam *)pWdaParams->wdaMsgParam;
+   if(pktClearParam->pktFilterCallback)
+   {
+       pktClearParam->pktFilterCallback(
+            pktClearParam->cbCtx,
+            CONVERT_WDI2SIR_STATUS(pwdiRcvFltPktClearRspParamsType->wdiStatus));
+   }
    vos_mem_free(pWdaParams->wdaMsgParam) ;
    vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
    vos_mem_free(pWdaParams) ;
@@ -19411,6 +19434,7 @@ void WDA_ReceiveFilterClearFilterRespCallback(
 void WDA_ReceiveFilterClearFilterReqCallback(WDI_Status wdiStatus, void* pUserData)
 {
    tWDA_ReqParams *pWdaParams = (tWDA_ReqParams *)pUserData;
+   tSirRcvFltPktClearParam *pktClearParam;
 
    VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_INFO,
               "<------ %s, wdiStatus: %d", __func__, wdiStatus);
@@ -19425,6 +19449,13 @@ void WDA_ReceiveFilterClearFilterReqCallback(WDI_Status wdiStatus, void* pUserDa
 
    if(IS_WDI_STATUS_FAILURE(wdiStatus))
    {
+      pktClearParam = (tSirRcvFltPktClearParam *)pWdaParams->wdaMsgParam;
+      if(pktClearParam->pktFilterCallback)
+      {
+          pktClearParam->pktFilterCallback(
+              pktClearParam->cbCtx,
+              CONVERT_WDI2SIR_STATUS(wdiStatus));
+      }
       vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
       vos_mem_free(pWdaParams->wdaMsgParam);
       vos_mem_free(pWdaParams);
@@ -19482,6 +19513,12 @@ VOS_STATUS WDA_ProcessReceiveFilterClearFilterReq (tWDA_CbContext *pWDA,
    {
       VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
               "Failure in WDA_ProcessReceiveFilterClearFilterReq(), free all the memory " );
+      if(pRcvFltPktClearParam->pktFilterCallback)
+      {
+          pRcvFltPktClearParam->pktFilterCallback(
+                pRcvFltPktClearParam->cbCtx,
+                CONVERT_WDI2SIR_STATUS(status));
+      }
       vos_mem_free(pWdaParams->wdaWdiApiMsgParam) ;
       vos_mem_free(pWdaParams->wdaMsgParam);
       vos_mem_free(pWdaParams);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2017 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -130,6 +130,9 @@
 
 /** Maximum time(ms) to wait for tdls initiator to start direct communication **/
 #define WAIT_TIME_TDLS_INITIATOR    600
+
+/**Maximum time(ms) to wait for clear packet req to complete **/
+#define PKT_FILTER_TIMEOUT 300
 
 /* Maximum time to get linux regulatory entry settings */
 #ifdef CONFIG_ENABLE_LINUX_REG
@@ -297,6 +300,7 @@ extern spinlock_t hdd_context_lock;
 #define GET_FRAME_LOG_MAGIC   0x464c4f47   //FLOG
 #define MON_MODE_MSG_MAGIC 0x51436B3A //MON_MODE
 #define ANTENNA_CONTEXT_MAGIC 0x414E544E //ANTN
+#define CLEAR_FILTER_MAGIC 0x52349732 //CLEAR FILTER
 #define MON_MODE_MSG_TIMEOUT 5000
 #define MON_MODE_START 1
 #define MON_MODE_STOP  0
@@ -1732,6 +1736,14 @@ VOS_STATUS hdd_stop_all_adapters( hdd_context_t *pHddCtx );
 VOS_STATUS hdd_reset_all_adapters( hdd_context_t *pHddCtx );
 VOS_STATUS hdd_start_all_adapters( hdd_context_t *pHddCtx );
 VOS_STATUS hdd_reconnect_all_adapters( hdd_context_t *pHddCtx );
+struct cfg80211_bss* hdd_get_bss_entry(struct wiphy *wiphy,
+      struct ieee80211_channel *channel,
+      const u8 *bssid,
+      const u8 *ssid, size_t ssid_len);
+void hdd_connect_result(struct net_device *dev, const u8 *bssid,
+   tCsrRoamInfo *roam_info, const u8 *req_ie,
+   size_t req_ie_len, const u8 * resp_ie,
+   size_t resp_ie_len, u16 status, gfp_t gfp);
 void hdd_dump_concurrency_info(hdd_context_t *pHddCtx);
 hdd_adapter_t * hdd_get_adapter_by_name( hdd_context_t *pHddCtx, tANI_U8 *name );
 hdd_adapter_t * hdd_get_adapter_by_macaddr( hdd_context_t *pHddCtx, tSirMacAddr macAddr );
@@ -1962,4 +1974,7 @@ void wlan_hdd_defer_scan_init_work(hdd_context_t *pHddCtx,
                                 unsigned long delay);
 int hdd_reassoc(hdd_adapter_t *pAdapter, const tANI_U8 *bssid,
 			const tANI_U8 channel, const handoff_src src);
+
+void wlan_hdd_start_sap(hdd_adapter_t *ap_adapter);
+
 #endif    // end #if !defined( WLAN_HDD_MAIN_H )
