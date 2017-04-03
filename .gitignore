@@ -38,6 +38,7 @@ modules.builtin
 *.sha1
 dtb
 zImage
+buildlog.txt
 changelog.txt
 
 #
