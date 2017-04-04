@@ -17,7 +17,6 @@
 #include <linux/types.h>
 #include <trace/events/power.h>
 #include <linux/moduleparam.h>
-#include <linux/display_state.h>
 
 #include "power.h"
 
@@ -779,10 +778,6 @@ void print_active_wakeup_sources(void)
 	struct wakeup_source *ws;
 	int active = 0;
 	struct wakeup_source *last_activity_ws = NULL;
-
-	// kinda pointless to force this routine during screen on
-	if (is_display_on())
-		return;
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
