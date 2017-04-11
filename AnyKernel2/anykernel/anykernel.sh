@@ -2,7 +2,8 @@
 # osm0sis @ xda-developers
 
 ## AnyKernel setup
-# EDIFY properties
+# begin properties
+properties() {
 kernel.string=Zetsubou by Ashish94 @ xda-developers
 do.devicecheck=1
 do.modules=0
@@ -13,6 +14,7 @@ device.name2=Redmi Note 3
 device.name3=
 device.name4=
 device.name5=
+} # end properties
 
 # shell variables
 block=/dev/block/bootdevice/by-name/boot;

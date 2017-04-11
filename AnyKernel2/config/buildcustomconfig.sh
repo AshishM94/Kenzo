@@ -84,11 +84,11 @@ echo "chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq"
 echo "chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" >> $CONFIGFILE
 cpu0=`grep selected.1 /tmp/aroma/cpu0.prop | cut -d '=' -f2`
 if [ $cpu0 = 1 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 400000" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 400000" >> $CONFIGFILE
 elif [ $cpu0 = 2 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 691200" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 691200" >> $CONFIGFILE
 else
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 806400" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 806400" >> $CONFIGFILE
 fi
 #
 echo "#a72 min" >> $CONFIGFILE
@@ -96,11 +96,11 @@ echo "chown system system /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq"
 echo "chmod 0664 /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq" >> $CONFIGFILE
 cpu4=`grep selected.1 /tmp/aroma/cpu4.prop | cut -d '=' -f2`
 if [ $cpu4 = 1 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 400000" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 400000" >> $CONFIGFILE
 elif [ $cpu4 = 2 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 883200" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 883200" >> $CONFIGFILE
 else
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 1190400" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 1190400" >> $CONFIGFILE
 fi
 #
 echo "#set max frequencies for both clusters" >> $CONFIGFILE

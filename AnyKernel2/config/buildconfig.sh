@@ -52,11 +52,11 @@ echo "#set min frequencies for both clusters" >> $CONFIGFILE
 echo "#a53 min" >> $CONFIGFILE
 echo "chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" >> $CONFIGFILE
 echo "chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" >> $CONFIGFILE
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 400000" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 400000" >> $CONFIGFILE
 echo "#a72 min" >> $CONFIGFILE
 echo "chown system system /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq" >> $CONFIGFILE
 echo "chmod 0664 /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq" >> $CONFIGFILE
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 400000" >> $CONFIGFILE
+echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 400000" >> $CONFIGFILE
 echo "#set max frequencies for both clusters" >> $CONFIGFILE
 echo "#a53 max" >> $CONFIGFILE
 echo "chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq" >> $CONFIGFILE
