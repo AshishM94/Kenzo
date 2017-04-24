@@ -240,3 +240,9 @@ echo "" >> $CONFIGFILE
 echo "#disable core control and enable msm thermal" >> $CONFIGFILE
 echo "write /sys/module/msm_thermal/core_control/enabled 0" >> $CONFIGFILE
 echo "write /sys/module/msm_thermal/parameters/enabled Y" >> $CONFIGFILE
+echo "" >> $CONFIGFILE
+
+echo "#Enabling QC2.0. It can charge up-to 3A depending on the charger" >> $CONFIGFILE
+echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 3000" >> $CONFIGFILE
+echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 3000" >> $CONFIGFILE
+echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp3_icl_ma 3000" >> $CONFIGFILE
