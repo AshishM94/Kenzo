@@ -150,6 +150,12 @@ write_boot() {
     fi;
     mv -f boot-new-signed.img boot-new.img;
   fi;
+  if [ -f "$bin/blobpack" ]; then
+    printf '-SIGNED-BY-SIGNBLOB-\00\00\00\00\00\00\00\00' > boot-new-signed.img;
+    $bin/blobpack tempblob LNX boot-new.img;
+    cat tempblob >> boot-new-signed.img;
+    mv -f boot-new-signed.img boot-new.img;
+  fi;
   if [ -f "/data/custom_boot_image_patch.sh" ]; then
     ash /data/custom_boot_image_patch.sh /tmp/anykernel/boot-new.img;
     if [ $? != 0 ]; then
@@ -293,6 +299,16 @@ patch_cmdline() {
   else
     match=$(grep -o "$1.*$" $cmdfile | cut -d\  -f1);
     sed -i -e "s;${match};${2};" -e 's;  ; ;' -e 's;[ \t]*$;;' $cmdfile;
+  fi;
+}
+
+# patch_prop <prop file> <prop name> <new prop value>
+patch_prop() {
+  if [ -z "$(grep "^$2=" $1)" ]; then
+    echo -ne "\n$2=$3\n" >> $1;
+  else
+    line=`grep -n "^$2=" $1 | head -n1 | cut -d: -f1`;
+    sed -i "${line}s;.*;${2}=${3};" $1;
   fi;
 }
 
