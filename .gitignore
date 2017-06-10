@@ -32,6 +32,14 @@ modules.builtin
 *.lzo
 *.patch
 *.gcno
+*.img
+*.rej
+*.zip
+*.sha1
+dtb
+zImage
+buildlog.txt
+changelog.txt
 
 #
 # Top-level generic files
