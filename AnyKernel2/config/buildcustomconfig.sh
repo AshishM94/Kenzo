@@ -134,58 +134,6 @@ fi
 
 echo "" >> $CONFIGFILE
 
-echo "#set cpu governor" >> $CONFIGFILE
-echo "chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor" >> $CONFIGFILE
-echo "chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor" >> $CONFIGFILE
-gov=`grep selected.0 /tmp/aroma/gov.prop | cut -d '=' -f2`
-if [ $gov = 1 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor chill" >> $CONFIGFILE
-elif [ $gov = 2 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor despair" >> $CONFIGFILE
-elif [ $gov = 3 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor impulse" >> $CONFIGFILE
-elif [ $gov = 4 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor relaxed" >> $CONFIGFILE
-elif [ $gov = 5 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive" >> $CONFIGFILE
-elif [ $gov = 6 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor conservative" >> $CONFIGFILE
-elif [ $gov = 7 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand" >> $CONFIGFILE
-elif [ $gov = 8 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave" >> $CONFIGFILE
-elif [ $gov = 9 ]; then
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor bioshock" >> $CONFIGFILE
-else
-echo "write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance" >> $CONFIGFILE
-fi
-echo "chown system system /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor" >> $CONFIGFILE
-echo "chmod 0664 /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor" >> $CONFIGFILE
-gov=`grep selected.0 /tmp/aroma/gov.prop | cut -d '=' -f2`
-if [ $gov = 1 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor chill" >> $CONFIGFILE
-elif [ $gov = 2 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor despair" >> $CONFIGFILE
-elif [ $gov = 3 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor impulse" >> $CONFIGFILE
-elif [ $gov = 4 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor relaxed" >> $CONFIGFILE
-elif [ $gov = 5 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive" >> $CONFIGFILE
-elif [ $gov = 6 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor conservative" >> $CONFIGFILE
-elif [ $gov = 7 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor ondemand" >> $CONFIGFILE
-elif [ $gov = 8 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor powersave" >> $CONFIGFILE
-elif [ $gov = 9 ]; then
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor bioshock" >> $CONFIGFILE
-else
-echo "write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor performance" >> $CONFIGFILE
-fi
-
-echo "" >> $CONFIGFILE
-
 echo "#Adreno Boost" >> $CONFIGFILE
 echo "write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 1" >> $CONFIGFILE
 

@@ -121,20 +121,6 @@ selectbox(
   "1612MHz","",0
 );
 
-selectbox(
-  "\nCPU Governor","<@center><b>\nSelect the governor you would like to use for your CPU</b>\n\n</@>","","gov.prop",
-  "chill","",0,
-  "despair","",0,
-  "impulse","",0,
-  "relaxed","",0,
-  "interactive","(recommended)",1,
-  "conservative","",0,
-  "ondemand","",0,
-  "powersave","",0,
-  "bioshock","",0,
-  "performance","",0
-);
-
 checkbox(
   "\nWake Gestures","<@center><b>\nSelect the screen gestures you would like to use</b>\n\n</@>","","gest.prop",
   
@@ -155,22 +141,6 @@ selectbox(
   "Sweep right","",0,
   "Sweep left","",0,
   "Sweep left or right","",1
-);
-
-selectbox(
-  "\nI/O Schedulers","<@center><b>\nSelect the I/O scheduler you would like to use</b>\n\n</@>","","sched.prop",
-  "noop","",0,
-  "deadline","",0,
-  "row","",0,
-  "sio","",0,
-  "cfq","",0,
-  "bfq","",0,
-  "fiops","",0,
-  "zen","(recommended)",1,
-  "sioplus","",0,
-  "tripndroid","",0,
-  "vr","",0,
-  "fifo","",0
 );
 
 selectbox(
