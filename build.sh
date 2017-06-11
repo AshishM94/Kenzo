@@ -30,7 +30,7 @@ nc='\033[0m'
 
 #directories
 KERNEL_DIR=$PWD
-KERN_IMG=$KERNEL_DIR/arch/arm64/boot/Image
+KERN_IMG=$KERNEL_DIR/arch/arm64/boot/Image.gz
 DT_IMG=$KERNEL_DIR/arch/arm64/boot/dt.img
 DTBTOOL=$KERNEL_DIR/tools/dtbToolCM
 ZIP_DIR=$KERNEL_DIR/AnyKernel2
@@ -77,7 +77,7 @@ if [ "$choice" == "1" ]; then
   echo -e "\n$cyan#######################################################################$nc"
   echo -e "$brown(i)Build started at $DATE$nc"
   make $CONFIG $THREAD &>/dev/null
-  make Image $THREAD &>buildlog.txt & pid=$!
+  make Image.gz $THREAD &>buildlog.txt & pid=$!
   spin[0]="$blue-"
   spin[1]="\\"
   spin[2]="|"
@@ -138,7 +138,7 @@ if [ "$choice" == "5" ]; then
   echo -e "\n$cyan#######################################################################$nc"
   echo -ne "$brown Enter starting date in yyyy-mm-dd format:$nc "
   read date
-  git log --pretty=format:"%h - %an, %ar : %s" --since="$date" > $LOG_DIR/changelog.txt
+  git log --pretty=format:"%h - %an : %s" --since="$date" > $LOG_DIR/changelog.txt
   echo -e "$purple(i)Change-log generated."
   echo -e "$cyan#######################################################################$nc"
 fi
@@ -149,7 +149,7 @@ if [ "$choice" == "6" ]; then
   cd $ZIP_DIR
   make clean &>/dev/null
   cp $DT_IMG $ZIP_DIR/anykernel/dtb
-  cp $KERN_IMG $ZIP_DIR/anykernel/zImage
+  cp $KERN_IMG $ZIP_DIR/anykernel
   make &>/dev/null
   make sign &>/dev/null
   echo -e "$purple(i)Flashable zip generated under $ZIP_DIR.$nc"
