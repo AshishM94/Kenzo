@@ -36,8 +36,7 @@ modules.builtin
 *.rej
 *.zip
 *.sha1
-dtb
-zImage
+Image.gz-dtb
 buildlog.txt
 changelog.txt
 

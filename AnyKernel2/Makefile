@@ -20,8 +20,7 @@ $(ZIP):
 
 clean:
 	@rm -vf "$(NAME)-"*.zip*
-	@rm -vf anykernel/dtb
-	@rm -vf anykernel/Image.gz
+	@rm -vf anykernel/Image.gz-dtb
 	@echo "Done."
 
 sign:

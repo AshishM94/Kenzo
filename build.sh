@@ -30,15 +30,13 @@ nc='\033[0m'
 
 #directories
 KERNEL_DIR=$PWD
-KERN_IMG=$KERNEL_DIR/arch/arm64/boot/Image.gz
-DT_IMG=$KERNEL_DIR/arch/arm64/boot/dt.img
-DTBTOOL=$KERNEL_DIR/tools/dtbToolCM
+KERN_IMG=$KERNEL_DIR/arch/arm64/boot/Image.gz-dtb
 ZIP_DIR=$KERNEL_DIR/AnyKernel2
 LOG_DIR=$ZIP_DIR/META-INF/com/google/android/aroma
 CONFIG_DIR=$KERNEL_DIR/arch/arm64/configs
 
 #export
-export CROSS_COMPILE="$HOME/x-tools/aarch64-unknown-linux-gnueabi/bin/aarch64-unknown-linux-gnueabi-"
+export CROSS_COMPILE="$HOME/kernel/aarch64-unknown-linux-gnueabi/bin/aarch64-unknown-linux-gnueabi-"
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER=$(uname -n)
@@ -61,13 +59,12 @@ echo -e "/___\___|\__|___/\__,_|_.__/ \___/ \__,_| |_|\_\___|_|  |_| |_|\___|_|"
 #main script
 while true; do
 echo -e "\n$green[1]Build kernel"
-echo -e "[2]Build device tree image"
-echo -e "[3]Regenerate defconfig"
-echo -e "[4]Do cleanup"
-echo -e "[5]Generate change-log"
-echo -e "[6]Generate flashable zip"
-echo -e "[7]Quit$nc"
-echo -ne "\n$blue(i)Please enter a choice[1-7]:$nc "
+echo -e "[2]Regenerate defconfig"
+echo -e "[3]Source cleanup"
+echo -e "[4]Generate change-log"
+echo -e "[5]Generate flashable zip"
+echo -e "[6]Quit$nc"
+echo -ne "\n$blue(i)Please enter a choice[1-6]:$nc "
 
 read choice
 
@@ -77,7 +74,7 @@ if [ "$choice" == "1" ]; then
   echo -e "\n$cyan#######################################################################$nc"
   echo -e "$brown(i)Build started at $DATE$nc"
   make $CONFIG $THREAD &>/dev/null
-  make Image.gz $THREAD &>buildlog.txt & pid=$!
+  make $THREAD &>buildlog.txt & pid=$!
   spin[0]="$blue-"
   spin[1]="\\"
   spin[2]="|"
@@ -108,15 +105,6 @@ fi
 
 if [ "$choice" == "2" ]; then
   echo -e "\n$cyan#######################################################################$nc"
-  make $CONFIG -j$THREAD &>/dev/null
-  $DTBTOOL -2 -o $KERNEL_DIR/arch/arm64/boot/dt.img -s 2048 -p $KERNEL_DIR/scripts/dtc/ $KERNEL_DIR/arch/arm/boot/dts/ &>/dev/null &>/dev/null
-  echo -e "$purple(i)DTB generated.$nc"
-  echo -e "$cyan#######################################################################$nc"
-fi
-
-
-if [ "$choice" == "3" ]; then
-  echo -e "\n$cyan#######################################################################$nc"
   make $CONFIG
   cp .config arch/arm64/configs/$CONFIG
   echo -e "$purple(i)Defconfig generated.$nc"
@@ -124,9 +112,9 @@ if [ "$choice" == "3" ]; then
 fi
 
 
-if [ "$choice" == "4" ]; then
+if [ "$choice" == "3" ]; then
   echo -e "\n$cyan#######################################################################$nc"
-  rm -f $DT_IMG
+  rm -f $KERN_IMG
   make clean &>/dev/null
   make mrproper &>/dev/null
   echo -e "$purple(i)Kernel source cleaned up.$nc"
@@ -134,7 +122,7 @@ if [ "$choice" == "4" ]; then
 fi
 
 
-if [ "$choice" == "5" ]; then
+if [ "$choice" == "4" ]; then
   echo -e "\n$cyan#######################################################################$nc"
   echo -ne "$brown Enter starting date in yyyy-mm-dd format:$nc "
   read date
@@ -144,11 +132,10 @@ if [ "$choice" == "5" ]; then
 fi
 
 
-if [ "$choice" == "6" ]; then
+if [ "$choice" == "5" ]; then
   echo -e "\n$cyan#######################################################################$nc"
   cd $ZIP_DIR
   make clean &>/dev/null
-  cp $DT_IMG $ZIP_DIR/anykernel/dtb
   cp $KERN_IMG $ZIP_DIR/anykernel
   make &>/dev/null
   make sign &>/dev/null
@@ -157,7 +144,7 @@ if [ "$choice" == "6" ]; then
 fi
 
 
-if [ "$choice" == "7" ]; then
+if [ "$choice" == "6" ]; then
  exit 1
 fi
 done
