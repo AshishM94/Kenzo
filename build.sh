@@ -36,7 +36,7 @@ LOG_DIR=$ZIP_DIR/META-INF/com/google/android/aroma
 CONFIG_DIR=$KERNEL_DIR/arch/arm64/configs
 
 #export
-export CROSS_COMPILE="$HOME/kernel/aarch64-unknown-linux-gnueabi/bin/aarch64-unknown-linux-gnueabi-"
+export CROSS_COMPILE="$HOME/kernel/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu-"
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER=$(uname -n)
