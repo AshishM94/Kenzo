@@ -1,7 +1,7 @@
 #!/sbin/sh
 
 #Build config file
-CONFIGFILE="/tmp/anykernel/ramdisk/init.zetsubou.rc"
+CONFIGFILE="/tmp/init.zetsubou.rc"
 
 echo "on post-fs" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
@@ -106,3 +106,14 @@ echo "#Enabling QC2.0. It can charge up-to 3A depending on the charger" >> $CONF
 echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 3000" >> $CONFIGFILE
 echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 3000" >> $CONFIGFILE
 echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp3_icl_ma 3000" >> $CONFIGFILE
+
+echo "" >> $CONFIGFILE
+
+echo "#Disable wakelocks" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws 0" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_ipa_ws 0" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_wlan_ws 0" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_timerfd_ws 0" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_netlink_ws 0" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_alarmtimer_ws 0" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_bluetooth_timer_ws 0" >> $CONFIGFILE

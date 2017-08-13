@@ -11,7 +11,7 @@ do.cleanup=1
 do.cleanuponabort=0
 device.name1=kenzo
 device.name2=Redmi Note 3
-device.name3=
+device.name3=kate
 device.name4=
 device.name5=
 } # end properties
@@ -38,6 +38,8 @@ dump_boot;
 
 # add zetsubou initialization script
 insert_line init.rc "import /init.zetsubou.rc" after "import /init.environ.rc" "import /init.zetsubou.rc";
+cp /tmp/init.zetsubou.rc /tmp/anykernel/ramdisk/init.zetsubou.rc
+chmod 0750 /tmp/anykernel/ramdisk/init.zetsubou.rc
 
 #add zram to fstab
 if [ $(grep -c "zram0" $ramdisk/fstab.qcom) == 0 ]; then

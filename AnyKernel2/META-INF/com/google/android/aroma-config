@@ -143,6 +143,17 @@ selectbox(
   "Sweep left or right","",1
 );
 
+checkbox(
+  "\nDisable Wakelocks","<@center><b>\nUn-Check to disable some battery hogging wakelocks</b>\n\n</@>","","wake.prop",
+  "qcom_rx","",1,
+  "ipa","",1,
+  "wlan","",1,
+  "timerfd","",1,
+  "netlink","",1,
+  "alarmtimer","",1,
+  "bluetooth_timer","",1
+);
+
 selectbox(
   "\nDisplay & Sound","<@center><b>\nSelect your desired color and sound profile</b>\n\n</@>","","misc.prop",
   "KCAL advanced color control", "", 2,

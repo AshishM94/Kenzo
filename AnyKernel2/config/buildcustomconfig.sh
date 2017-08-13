@@ -1,7 +1,7 @@
 #!/sbin/sh
 
 #Build config file
-CONFIGFILE="/tmp/anykernel/ramdisk/init.zetsubou.rc"
+CONFIGFILE="/tmp/init.zetsubou.rc"
 
 echo "on post-fs" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
@@ -194,3 +194,22 @@ echo "#Enabling QC2.0. It can charge up-to 3A depending on the charger" >> $CONF
 echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 3000" >> $CONFIGFILE
 echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 3000" >> $CONFIGFILE
 echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp3_icl_ma 3000" >> $CONFIGFILE
+
+echo "" >> $CONFIGFILE
+
+echo "#Disable wakelocks" >> $CONFIGFILE
+rx=`grep "item.0.1" /tmp/aroma/wake.prop | cut -d '=' -f2`
+ip=`grep "item.0.2" /tmp/aroma/wake.prop | cut -d '=' -f2`
+wl=`grep "item.0.3" /tmp/aroma/wake.prop | cut -d '=' -f2`
+ti=`grep "item.0.4" /tmp/aroma/wake.prop | cut -d '=' -f2`
+ne=`grep "item.0.5" /tmp/aroma/wake.prop | cut -d '=' -f2`
+al=`grep "item.0.6" /tmp/aroma/wake.prop | cut -d '=' -f2`
+bt=`grep "item.0.7" /tmp/aroma/wake.prop | cut -d '=' -f2`
+
+echo "write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws " $rx >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_ipa_ws " $ip >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_wlan_ws " $wl >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_timerfd_ws " $ti >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_netlink_ws " $ne >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_alarmtimer_ws " $al >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_bluetooth_timer_ws " $bt >> $CONFIGFILE
