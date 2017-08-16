@@ -36,7 +36,7 @@ LOG_DIR=$ZIP_DIR/META-INF/com/google/android/aroma
 CONFIG_DIR=$KERNEL_DIR/arch/arm64/configs
 
 #export
-export CROSS_COMPILE="$HOME/kernel/aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+export CROSS_COMPILE="$HOME/kernel/aarch64-linux-android-6.x/bin/aarch64-linux-android-"
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER=$(uname -n)
@@ -139,6 +139,7 @@ if [ "$choice" == "5" ]; then
   cp $KERN_IMG $ZIP_DIR/anykernel
   make &>/dev/null
   make sign &>/dev/null
+  cd ..
   echo -e "$purple(i)Flashable zip generated under $ZIP_DIR.$nc"
   echo -e "$cyan#######################################################################$nc"
 fi
