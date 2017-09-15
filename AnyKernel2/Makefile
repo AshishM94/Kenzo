@@ -20,8 +20,5 @@ $(ZIP):
 
 clean:
 	@rm -vf "$(NAME)-"*.zip*
-	@rm -vf anykernel/Image.gz-dtb
+	@rm -vf Image.gz-dtb
 	@echo "Done."
-
-sign:
-	java -classpath testsign.jar testsign "$(NAME)-$(VERSION)-$(DATE)".zip "$(NAME)-$(VERSION)-$(DATE)"-signed.zip

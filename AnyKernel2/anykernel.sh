@@ -10,8 +10,8 @@ do.modules=0
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=kenzo
-device.name2=Redmi Note 3
-device.name3=kate
+device.name2=kate
+device.name3=Redmi Note 3
 device.name4=
 device.name5=
 } # end properties
@@ -30,7 +30,6 @@ is_slot_device=0;
 # set permissions for included ramdisk files
 chmod -R 755 $ramdisk
 
-
 ## AnyKernel install
 dump_boot;
 
@@ -38,8 +37,6 @@ dump_boot;
 
 # add zetsubou initialization script
 insert_line init.rc "import /init.zetsubou.rc" after "import /init.environ.rc" "import /init.zetsubou.rc";
-cp /tmp/init.zetsubou.rc /tmp/anykernel/ramdisk/init.zetsubou.rc
-chmod 0750 /tmp/anykernel/ramdisk/init.zetsubou.rc
 
 #add zram to fstab
 if [ $(grep -c "zram0" $ramdisk/fstab.qcom) == 0 ]; then
