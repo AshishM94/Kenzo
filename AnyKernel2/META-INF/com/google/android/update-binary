@@ -47,6 +47,13 @@ $bb chmod -R 755 /tmp/anykernel/tools /tmp/anykernel/bin;
 
 ui_print "$(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 ui_print " ";
+ui_print "                _ __  _____          ";
+ui_print "    _________  (_) /_/ __(_)_______  ";
+ui_print "   / ___/ __ \/ / __/ /_/ / ___/ _ \ ";
+ui_print "  (__  ) /_/ / / /_/ __/ / /  /  __/ ";
+ui_print " /____/ .___/_/\__/_/ /_/_/   \___/  ";
+ui_print "     /_/                             ";
+ui_print " ";
 ui_print "AnyKernel2 by osm0sis @ xda-developers";
 ui_print " ";
 umount /system 2>/dev/null;

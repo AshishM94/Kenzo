@@ -19,7 +19,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #colors
-black='\033[0;30m'
 red='\033[0;31m'
 green='\033[0;32m'
 brown='\033[0;33m'
@@ -38,22 +37,23 @@ CONFIG_DIR=$KERNEL_DIR/arch/arm64/configs
 export CROSS_COMPILE="$HOME/kernel/aarch64-linux-android-6.x/bin/aarch64-linux-android-"
 export ARCH=arm64
 export SUBARCH=arm64
+export LOCALVERSION="-Spitfire"
 export KBUILD_BUILD_USER=$(uname -n)
 export KBUILD_BUILD_HOST=$(uname -r)
 
 #misc
-CONFIG=zetsubou_defconfig
+CONFIG=kenzo_defconfig
 THREAD="-j$(grep -c ^processor /proc/cpuinfo)"
 
 #ASCII art
-echo -e "$cyan############################ WELCOME TO ##############################"
-echo -e "         _             _                   _                        _" 
-echo -e "        | |           | |                 | |                      | |"
-echo -e " _______| |_ ___ _   _| |__   ___  _   _  | | _____ _ __ _ __   ___| |"
-echo -e "|_  / _ \ __/ __| | | | '_ \ / _ \| | | | | |/ / _ \ '__| '_ \ / _ \ |"
-echo -e " / /  __/ |_\__ \ |_| | |_) | (_) | |_| | |   <  __/ |  | | | |  __/ |"
-echo -e "/___\___|\__|___/\__,_|_.__/ \___/ \__,_| |_|\_\___|_|  |_| |_|\___|_|"
-                                                                                                                                      echo -e "\n############################# BUILDER ################################$nc"
+echo -e "$cyan############################ WELCOME TO ##############################$nc"
+echo -e "$green               _ __  _____              __                        __"
+echo -e "   _________  (_) /_/ __(_)_______     / /_____  _________  ___  / /"
+echo -e "  / ___/ __ \/ / __/ /_/ / ___/ _ \   / //_/ _ \/ ___/ __ \/ _ \/ / "
+echo -e " (__  ) /_/ / / /_/ __/ / /  /  __/  / ,< /  __/ /  / / / /  __/ /  "
+echo -e "/____/ .___/_/\__/_/ /_/_/   \___/  /_/|_|\___/_/  /_/ /_/\___/_/   "
+echo -e "    /_/                                                             $nc"
+echo -e "$cyan\n############################# BUILDER ################################$nc"
 
 #main script
 while true; do

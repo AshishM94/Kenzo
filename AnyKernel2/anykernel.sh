@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() {
-kernel.string=Zetsubou by Ashish94 @ xda-developers
+kernel.string=Spitfire Kernel by AshishM94
 do.devicecheck=1
 do.modules=0
 do.cleanup=1
@@ -35,8 +35,8 @@ dump_boot;
 
 # begin ramdisk changes
 
-# add zetsubou initialization script
-insert_line init.rc "import /init.zetsubou.rc" after "import /init.environ.rc" "import /init.zetsubou.rc";
+# add init script
+insert_line init.rc "import /init.spitfire.rc" after "import /init.environ.rc" "import /init.spitfire.rc";
 
 #add zram to fstab
 if [ $(grep -c "zram0" $ramdisk/fstab.qcom) == 0 ]; then

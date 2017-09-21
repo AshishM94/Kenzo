@@ -1,12 +1,12 @@
-NAME ?= Zetsubou
+NAME ?= Spitfire
 
 VERSION ?= N
 
-DATE := $(shell date +'%Y%m%d')
+DATE := $(shell date +'%Y%m%d-%H%M')
 
 ZIP := $(NAME)-$(VERSION)-$(DATE).zip
 
-EXCLUDE := Makefile *.git* *.jar*
+EXCLUDE := Makefile *.git*
 
 all: $(ZIP)
 
