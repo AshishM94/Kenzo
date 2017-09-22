@@ -82,12 +82,3 @@ write /sys/module/msm_thermal/parameters/enabled Y
 write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 3000
 write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 3000
 write /sys/module/qpnp_smbcharger/parameters/default_hvdcp3_icl_ma 3000
-
-#Disable wakelocks
-write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws 0
-write /sys/module/wakeup/parameters/enable_ipa_ws 0
-write /sys/module/wakeup/parameters/enable_wlan_ws 0
-write /sys/module/wakeup/parameters/enable_timerfd_ws 0
-write /sys/module/wakeup/parameters/enable_netlink_ws 0
-write /sys/module/wakeup/parameters/enable_alarmtimer_ws 0
-write /sys/module/wakeup/parameters/enable_bluetooth_timer_ws 0
