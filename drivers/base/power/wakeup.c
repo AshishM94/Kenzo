@@ -29,12 +29,6 @@ static bool enable_timerfd_ws = true;
 module_param(enable_timerfd_ws, bool, 0644);
 static bool enable_netlink_ws = true;
 module_param(enable_netlink_ws, bool, 0644);
-static bool enable_wlan_ws = true;
-module_param(enable_wlan_ws, bool, 0644);
-static bool enable_alarmtimer_ws = true;
-module_param(enable_alarmtimer_ws, bool, 0644);
-static bool enable_bluetooth_timer_ws = true;
-module_param(enable_bluetooth_timer_ws, bool, 0644);
 
 /*
  * If set, the suspend/hibernate code will abort transitions to a sleep state
@@ -471,13 +465,7 @@ static bool wakeup_source_blocker(struct wakeup_source *ws)
 			(!enable_timerfd_ws &&
 				!strncmp(ws->name, "[timerfd]", wslen)) ||
 			(!enable_netlink_ws &&
-				!strncmp(ws->name, "NETLINK", wslen)) ||
-			(!enable_timerfd_ws &&
-				!strncmp(ws->name, "wlan", wslen)) ||
-			(!enable_timerfd_ws &&
-				!strncmp(ws->name, "alarmtimer", wslen)) ||
-			(!enable_timerfd_ws &&
-				!strncmp(ws->name, "bluetooth_timer", wslen))) {
+				!strncmp(ws->name, "NETLINK", wslen))) {
 			if (ws->active) {
 				wakeup_source_deactivate(ws);
 				pr_info("forcefully deactivate wakeup source: %s\n",
