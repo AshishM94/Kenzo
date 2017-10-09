@@ -463,6 +463,4 @@ static inline void page_key_write(void *address) {}
 
 #endif /* !CONFIG_ARCH_SAVE_PAGE_KEYS */
 
-void print_active_wakeup_sources(void);
-
 #endif /* _LINUX_SUSPEND_H */
