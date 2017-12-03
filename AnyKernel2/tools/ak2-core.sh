@@ -75,13 +75,25 @@ dump_boot() {
     esac;
   fi;
   mv -f $ramdisk /tmp/anykernel/rdtmp;
+  case $(od -ta -An -N4 $split_img/boot.img-ramdisk.gz) in
+    '  us  vt'*|'  us  rs'*) compext="gz"; unpackcmd="gzip";;
+    '  ht   L   Z   O') compext="lzo"; unpackcmd="lzop";;
+    '   ] nul nul nul') compext="lzma"; unpackcmd="$bin/xz";;
+    '   }   7   z   X') compext="xz"; unpackcmd="$bin/xz";;
+    '   B   Z   h'*) compext="bz2"; unpackcmd="bzip2";;
+    ' stx   !   L can') compext="lz4-l"; unpackcmd="$bin/lz4";;
+    ' etx   !   L can'|' eot   "   M can') compext="lz4"; unpackcmd="$bin/lz4";;
+    *) ui_print " "; ui_print "Unknown ramdisk compression. Aborting..."; exit 1;;
+  esac;
+  mv -f $split_img/boot.img-ramdisk.gz $split_img/boot.img-ramdisk.cpio.$compext;
   mkdir -p $ramdisk;
+  chmod 755 $ramdisk;
   cd $ramdisk;
-  gunzip -c $split_img/boot.img-ramdisk.gz | cpio -i;
+  $unpackcmd -dc $split_img/boot.img-ramdisk.cpio.$compext | cpio -i -d;
   if [ $? != 0 -o -z "$(ls $ramdisk)" ]; then
     ui_print " "; ui_print "Unpacking ramdisk failed. Aborting..."; exit 1;
   fi;
-  cp -af /tmp/anykernel/rdtmp/* $ramdisk;
+  test ! -z "$(ls /tmp/anykernel/rdtmp)" && cp -af /tmp/anykernel/rdtmp/* $ramdisk;
 }
 
 # repack ramdisk then build and write image
@@ -151,32 +163,45 @@ write_boot() {
     dtb=`ls *-dtb`;
     dtb="--dt $split_img/$dtb";
   fi;
+  case $ramdisk_compression in
+    auto|"") compext=`echo $split_img/boot.img-ramdisk.cpio.* | rev | cut -d. -f1 | rev`;;
+    *) compext=$ramdisk_compression;;
+  esac;
+  case $compext in
+    gz) repackcmd="gzip";;
+    lzo) repackcmd="lzo";;
+    lzma) repackcmd="$bin/xz -Flzma";;
+    xz) repackcmd="$bin/xz -Ccrc32";;
+    bz2) repackcmd="bzip2";;
+    lz4-l) repackcmd="$bin/lz4 -l";;
+    lz4) repackcmd="$bin/lz4";;
+  esac;
   if [ -f "$bin/mkbootfs" ]; then
-    $bin/mkbootfs $ramdisk | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
+    $bin/mkbootfs $ramdisk | $repackcmd -9c > /tmp/anykernel/ramdisk-new.cpio.$compext;
   else
     cd $ramdisk;
-    find . | cpio -H newc -o | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
+    find . | cpio -H newc -o | $repackcmd -9c > /tmp/anykernel/ramdisk-new.cpio.$compext;
   fi;
   if [ $? != 0 ]; then
     ui_print " "; ui_print "Repacking ramdisk failed. Aborting..."; exit 1;
   fi;
   cd /tmp/anykernel;
   if [ -f "$bin/mkmtkhdr" ]; then
-    $bin/mkmtkhdr --rootfs ramdisk-new.cpio.gz;
-    mv -f ramdisk-new.cpio.gz-mtk ramdisk-new.cpio.gz;
+    $bin/mkmtkhdr --rootfs ramdisk-new.cpio.$compext;
+    mv -f ramdisk-new.cpio.$compext-mtk ramdisk-new.cpio.$compext;
     case $kernel in
       $split_img/*) ;;
       *) $bin/mkmtkhdr --kernel $kernel; kernel=$kernel-mtk;;
     esac;
   fi;
   if [ -f "$bin/mkimage" ]; then
-    $bin/mkimage -A $arch -O $os -T $type -C $comp -a $addr -e $ep -n "$name" -d $kernel:$ramdisk boot-new.img;
+    $bin/mkimage -A $arch -O $os -T $type -C $comp -a $addr -e $ep -n "$name" -d $kernel:ramdisk-new.cpio.$compext boot-new.img;
   elif [ -f "$bin/rkcrc" ]; then
-    $bin/rkcrc -k ramdisk-new.cpio.gz boot-new.img;
+    $bin/rkcrc -k ramdisk-new.cpio.$compext boot-new.img;
   elif [ -f "$bin/pxa-mkbootimg" ]; then
-    $bin/pxa-mkbootimg --kernel $kernel --ramdisk ramdisk-new.cpio.gz $second --cmdline "$cmdline" --board "$board" --base $base --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff $secondoff --tags_offset "$tagsoff" --unknown $unknown $dtb --output boot-new.img;
+    $bin/pxa-mkbootimg --kernel $kernel --ramdisk ramdisk-new.cpio.$compext $second --cmdline "$cmdline" --board "$board" --base $base --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff $secondoff --tags_offset "$tagsoff" --unknown $unknown $dtb --output boot-new.img;
   else
-    $bin/mkbootimg --kernel $kernel --ramdisk ramdisk-new.cpio.gz $second --cmdline "$cmdline" --board "$board" --base $base --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff $secondoff --tags_offset "$tagsoff" --os_version "$osver" --os_patch_level "$oslvl" $hash $dtb --output boot-new.img;
+    $bin/mkbootimg --kernel $kernel --ramdisk ramdisk-new.cpio.$compext $second --cmdline "$cmdline" --board "$board" --base $base --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff $secondoff --tags_offset "$tagsoff" --os_version "$osver" --os_patch_level "$oslvl" $hash $dtb --output boot-new.img;
   fi;
   if [ $? != 0 ]; then
     ui_print " "; ui_print "Repacking image failed. Aborting..."; exit 1;
@@ -243,6 +268,25 @@ write_boot() {
     dd if=/dev/zero of=$block 2>/dev/null;
     dd if=/tmp/anykernel/boot-new.img of=$block;
   fi;
+  for i in dtbo dtbo.img; do
+    if [ -f /tmp/anykernel/$i ]; then
+      dtbo=$i;
+      break;
+    fi;
+  done;
+  if [ "$dtbo" ]; then
+    dtbo_block=/dev/block/bootdevice/by-name/dtbo$slot;
+    if [ ! -e "$(echo $dtbo_block)" ]; then
+      ui_print " "; ui_print "dtbo partition could not be found. Aborting..."; exit 1;
+    fi;
+    if [ -f "$bin/flash_erase" -a -f "$bin/nandwrite" ]; then
+      $bin/flash_erase $dtbo_block 0 0;
+      $bin/nandwrite -p $dtbo_block /tmp/anykernel/$dtbo;
+    else
+      dd if=/dev/zero of=$dtbo_block 2>/dev/null;
+      dd if=/tmp/anykernel/$dtbo of=$dtbo_block;
+    fi;
+  fi;
 }
 
 # backup_file <file>
@@ -260,7 +304,7 @@ replace_section() {
   begin=`grep -n "$2" $1 | head -n1 | cut -d: -f1`;
   for end in `grep -n "$3" $1 | cut -d: -f1`; do
     if [ "$begin" -lt "$end" ]; then
-      if [ "$3" == " " ]; then
+      if [ "$3" == " " -o -z "$3" ]; then
         sed -i "/${2//\//\\/}/,/^\s*$/d" $1;
       else
         sed -i "/${2//\//\\/}/,/${3//\//\\/}/d" $1;
@@ -276,7 +320,7 @@ remove_section() {
   begin=`grep -n "$2" $1 | head -n1 | cut -d: -f1`;
   for end in `grep -n "$3" $1 | cut -d: -f1`; do
     if [ "$begin" -lt "$end" ]; then
-      if [ "$3" == " " ]; then
+      if [ "$3" == " " -o -z "$3" ]; then
         sed -i "/${2//\//\\/}/,/^\s*$/d" $1;
       else
         sed -i "/${2//\//\\/}/,/${3//\//\\/}/d" $1;
@@ -356,7 +400,7 @@ replace_file() {
 # patch_fstab <fstab file> <mount match name> <fs match type> <block|mount|fstype|options|flags> <original string> <replacement string>
 patch_fstab() {
   entry=$(grep "$2" $1 | grep "$3");
-  if [ -z "$(echo "$entry" | grep "$6")" ]; then
+  if [ -z "$(echo "$entry" | grep "$6")" -o "$6" == " " -o -z "$6" ]; then
     case $4 in
       block) part=$(echo "$entry" | awk '{ print $1 }');;
       mount) part=$(echo "$entry" | awk '{ print $2 }');;
@@ -364,7 +408,7 @@ patch_fstab() {
       options) part=$(echo "$entry" | awk '{ print $4 }');;
       flags) part=$(echo "$entry" | awk '{ print $5 }');;
     esac;
-    newpart=$(echo "$part" | sed "s;${5};${6};");
+    newpart=$(echo "$part" | sed -e "s;${5};${6};" -e "s; ;;g" -e 's;,\{2,\};,;g' -e 's;,*$;;g' -e 's;^,;;g');
     newentry=$(echo "$entry" | sed "s;${part};${newpart};");
     sed -i "s;${entry};${newentry};" $1;
   fi;
@@ -396,6 +440,11 @@ patch_prop() {
 if [ "$is_slot_device" == 1 ]; then
   slot=$(getprop ro.boot.slot_suffix 2>/dev/null);
   test ! "$slot" && slot=$(grep -o 'androidboot.slot_suffix=.*$' /proc/cmdline | cut -d\  -f1 | cut -d= -f2);
+  if [ ! "$slot" ]; then
+    slot=$(getprop ro.boot.slot 2>/dev/null);
+    test ! "$slot" && slot=$(grep -o 'androidboot.slot=.*$' /proc/cmdline | cut -d\  -f1 | cut -d= -f2);
+    test "$slot" && slot=_$slot;
+  fi;
   test "$slot" && block=$block$slot;
   if [ $? != 0 -o ! -e "$block" ]; then
     ui_print " "; ui_print "Unable to determine active boot slot. Aborting..."; exit 1;

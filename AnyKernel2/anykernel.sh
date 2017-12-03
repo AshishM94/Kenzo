@@ -19,6 +19,7 @@ device.name5=
 # shell variables
 block=/dev/block/bootdevice/by-name/boot;
 is_slot_device=0;
+ramdisk_compression=auto;
 
 
 ## AnyKernel methods (DO NOT CHANGE)
@@ -26,9 +27,11 @@ is_slot_device=0;
 . /tmp/anykernel/tools/ak2-core.sh;
 
 
-## AnyKernel permissions
-# set permissions for included ramdisk files
-chmod -R 755 $ramdisk
+## AnyKernel file attributes
+# set permissions/ownership for included ramdisk files
+chmod -R 750 $ramdisk/*;
+chown -R root:root $ramdisk/*;
+
 
 ## AnyKernel install
 dump_boot;
