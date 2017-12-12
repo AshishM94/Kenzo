@@ -51,12 +51,12 @@ insert_line init.qcom.rc "swapon_all fstab.qcom" after "mount_all fstab.qcom" " 
 replace_line init.qcom.power.rc "setprop sys.io.scheduler" "    setprop sys.io.scheduler \"zen\"";
 
 #fstab lazytime support
-patch_fstab fstab.qcom /system ext4 options "ro,barrier=1,discard wait" "ro,lazytime,barrier=1,discard wait"
-patch_fstab fstab.qcom /data f2fs options "nosuid,nodev,noatime,inline_xattr,data_flush wait,check,encryptable=footer,formattable,length=-16384" "nosuid,nodev,lazytime,inline_xattr,data_flush wait,check,encryptable=footer,formattable,length=-16384"
-patch_fstab fstab.qcom /data ext4 options "nosuid,nodev,noatime,barrier=1,noauto_da_alloc wait,check,encryptable=footer,formattable,length=-16384" "nosuid,nodev,lazytime,barrier=1,noauto_da_alloc wait,check,encryptable=footer,formattable,length=-16384"
-patch_fstab fstab.qcom /cache f2fs options "nosuid,nodev,noatime,inline_xattr,flush_merge,data_flush wait,check,formattable" "nosuid,nodev,lazytime,inline_xattr,flush_merge,data_flush wait,check,formattable"
-patch_fstab fstab.qcom /cache ext4 options "nosuid,nodev,noatime,barrier=1 wait,check,formattable" "nosuid,nodev,lazytime,barrier=1 wait,check,formattable"
-patch_fstab fstab.qcom /persist ext4 options "nosuid,nodev,barrier=1 wait" "lazytime,nosuid,nodev,barrier=1 wait"
+patch_fstab fstab.qcom /system ext4 options "ro,barrier=1,discard" "ro,lazytime,barrier=1,discard"
+patch_fstab fstab.qcom /data f2fs options "nosuid,nodev,noatime,inline_xattr,data_flush" "nosuid,nodev,lazytime,inline_xattr,data_flush"
+patch_fstab fstab.qcom /data ext4 options "nosuid,nodev,noatime,barrier=1,noauto_da_alloc" "nosuid,nodev,lazytime,barrier=1,noauto_da_alloc"
+patch_fstab fstab.qcom /cache f2fs options "nosuid,nodev,noatime,inline_xattr,flush_merge,data_flush" "nosuid,nodev,lazytime,inline_xattr,flush_merge,data_flush"
+patch_fstab fstab.qcom /cache ext4 options "nosuid,nodev,noatime,barrier=1" "nosuid,nodev,lazytime,barrier=1"
+patch_fstab fstab.qcom /persist ext4 options "nosuid,nodev,barrier=1" "nosuid,nodev,lazytime,barrier=1"
 
 # end ramdisk changes
 
