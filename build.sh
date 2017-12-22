@@ -34,7 +34,7 @@ ZIP_DIR=$KERNEL_DIR/AnyKernel2
 CONFIG_DIR=$KERNEL_DIR/arch/arm64/configs
 
 #export
-export CROSS_COMPILE="$HOME/kernel/aarch64-linux-android-6.x/bin/aarch64-linux-android-"
+export CROSS_COMPILE="$HOME/kernel/gcc-linaro-6.4.1-2017.11-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
 export ARCH=arm64
 export SUBARCH=arm64
 export LOCALVERSION="-Spitfire"
