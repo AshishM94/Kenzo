@@ -1,6 +1,6 @@
 NAME ?= Spitfire
 
-VERSION ?= N
+VERSION ?= O
 
 DATE := $(shell date +'%Y%m%d-%H%M')
 
